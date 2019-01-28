@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           Feedly NG Filter
-// @namespace      https://twitter.com/xulapp
+// @namespace      https://github.com/matzkoh
 // @version        1.0.0
 // @description    ルールにマッチするアイテムを既読にして取り除きます。ルールは正規表現で記述でき、複数のルールをツリー状に組み合わせることができます。
 // @author         matzkoh
