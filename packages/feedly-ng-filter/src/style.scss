@@ -1,0 +1,78 @@
+@keyframes error {
+  from {
+    background-color: #ff0;
+    border-color: #f00;
+  }
+}
+
+.fngf-panel {
+  position: fixed;
+  z-index: 2147483646;
+  display: grid;
+  grid-gap: 10px;
+  min-width: 320px;
+  padding: 10px;
+  font-size: 12px;
+  color: #333;
+  cursor: default;
+  user-select: none;
+  background-color: #fffe;
+  box-shadow: 1px 2px 5px #0008;
+}
+
+.fngf-panel-body {
+  display: grid;
+  grid-gap: 10px;
+}
+
+.fngf-panel input[type='text'] {
+  padding: 4px;
+  font: inherit;
+  border: 1px solid #999;
+}
+
+.fngf-panel input[type='text']:focus {
+  box-shadow: 0 0 0 1px #999 inset;
+}
+
+.fngf-panel-terms {
+  display: grid;
+  grid-template-columns: 0 1fr 0;
+  grid-gap: 5px;
+  align-items: center;
+  width: 400px;
+  padding: 10px;
+  white-space: nowrap;
+  border: 1px solid #999;
+}
+
+.fngf-panel.root .fngf-panel-name,
+.fngf-panel.root .fngf-panel-terms {
+  display: none;
+}
+
+.fngf-panel-terms-textbox.error {
+  animation: error 1s;
+}
+
+.fngf-panel-rules {
+  padding: 10px;
+  border: 1px solid #999;
+}
+
+.fngf-panel fieldset {
+  padding: 10px;
+  margin: 0;
+}
+
+.fngf-panel-rule-name {
+  flex-grow: 1;
+}
+
+.fngf-panel-buttons {
+  justify-content: space-between;
+}
+
+.fngf-panel-buttons > .fngf-btn-group:not(:first-child) {
+  margin-left: 10px;
+}
