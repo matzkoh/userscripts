@@ -13,9 +13,11 @@
     "ecmaVersion": 2018
   },
   "globals": {
-    "GM_notification": false
+    "GM_notification": false,
+    "GM_unregisterMenuCommand": false
   },
   "rules": {
+    "curly": ["error", "all"],
     "linebreak-style": ["error", "unix"],
     "no-console": "off"
   }
