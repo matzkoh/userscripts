@@ -37,7 +37,7 @@
 
 .fngf-panel-terms {
   display: grid;
-  grid-template-columns: 0 1fr 0;
+  grid-template-columns: auto 1fr auto;
   grid-gap: 5px;
   align-items: center;
   width: 400px;

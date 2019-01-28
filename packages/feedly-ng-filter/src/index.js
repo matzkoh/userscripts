@@ -1498,33 +1498,39 @@ function onNGSettingCommand({ target }) {
 }
 
 function addSettingsMenuItem() {
-  const feedlyTabs = document.getElementById('feedlyTabs')
-  if (!feedlyTabs) {
+  if (!document.getElementById('filtertab')) {
     setTimeout(addSettingsMenuItem, 100)
     return
   }
 
   let prefListener
 
-  const observer = new MutationObserver(() => {
+  function onMutation() {
     if (document.getElementById('feedly-ng-filter-setting')) {
       return
-    } else if (prefListener) {
+    }
+
+    const nativeFilterItem = document.getElementById('filtertab')
+    if (!nativeFilterItem) {
+      return
+    }
+
+    if (prefListener) {
       pref.off('change', prefListener)
     }
 
     const { tab, label } = $el`
       <div class="tab" contextmenu="${MenuCommand.contextmenu.parentNode.id}" @click="${onNGSettingCommand}" ref="tab">
         <div class="header target">
-          <img class="icon" src="${GM_info.script.icon}">
-          <div class="label primary" id="feedly-ng-filter-setting" ref="label"></div>
+          <img class="icon" src="${GM_info.script.icon}" style="cursor: pointer;">
+          <div class="label nonEmpty" id="feedly-ng-filter-setting" ref="label"></div>
         </div>
       </div>
     `
 
     label.textContent = __`NG Setting`
 
-    feedlyTabs.appendChild(tab)
+    nativeFilterItem.parentNode.insertBefore(tab, nativeFilterItem.nextSibling)
     document.body.appendChild(contextmenu.parentNode)
 
     prefListener = ({ key }) => {
@@ -1534,11 +1540,14 @@ function addSettingsMenuItem() {
     }
 
     pref.on('change', prefListener)
+  }
+
+  new MutationObserver(onMutation).observe(document.getElementById('feedlyTabs'), {
+    childList: true,
+    subtree: true,
   })
 
-  observer.observe(feedlyTabs, {
-    childList: true,
-  })
+  onMutation()
 }
 
 async function openFilePicker(multiple) {

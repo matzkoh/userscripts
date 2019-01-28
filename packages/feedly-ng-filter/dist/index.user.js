@@ -34,7 +34,7 @@
     }
     const CSS_STYLE_TEXT =
       ".fngf-row {\n  display: flex;\n  flex-direction: row;\n}\n\n.fngf-column {\n  display: flex;\n  flex-direction: column;\n}\n\n.fngf-align-center {\n  align-items: center;\n}\n\n.fngf-grow {\n  flex-grow: 1;\n}\n\n.fngf-badge {\n  padding: 0 0.5em;\n  margin: 0 0.5em;\n  color: #fff;\n  background-color: #999;\n  border-radius: 50%;\n}\n\n.fngf-btn {\n  padding: 5px 10px;\n  font: inherit;\n  font-weight: bold;\n  color: #333;\n  background-color: #eee;\n  border: none;\n  outline: none;\n}\n\n.fngf-menu-btn > .fngf-btn:not(:last-child) {\n  margin-right: -1px;\n}\n\n.fngf-btn[disabled] {\n  color: #ccc;\n  background-color: transparent;\n  box-shadow: 0 0 0 1px #eee inset;\n}\n\n.fngf-btn:not([disabled]):active,\n.fngf-btn:not([disabled]).active,\n.fngf-checkbox > :checked + .fngf-btn {\n  background-color: #ccc;\n}\n\n.fngf-btn:not([disabled]):hover,\n.fngf-menu-btn:hover > .fngf-btn:not([disabled]) {\n  box-shadow: 0 0 0 1px #ccc inset;\n}\n\n.fngf-dropdown {\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding-right: 5px;\n  padding-left: 5px;\n}\n\n.fngf-dropdown::before {\n  display: block;\n  content: '';\n  border-top: 5px solid #333;\n  border-right: 3px solid transparent;\n  border-left: 3px solid transparent;\n}\n\n.fngf-dropdown-menu {\n  position: absolute;\n  top: 100%;\n  right: 0;\n  z-index: 1;\n  min-width: 100px;\n  background-color: #fff;\n  box-shadow: 1px 2px 5px #0008;\n}\n\n.fngf-dropdown:not(.active) > .fngf-dropdown-menu {\n  display: none;\n}\n\n.fngf-dropdown-menu-item {\n  padding: 10px;\n}\n\n.fngf-dropdown-menu-item:hover {\n  background-color: #eee;\n}\n\n.fngf-checkbox > input[type='checkbox'] {\n  display: none;\n}\n\n.fngf-only:not(:only-child) {\n  display: none;\n}\n" +
-      "@keyframes error {\n  from {\n    background-color: #ff0;\n    border-color: #f00;\n  }\n}\n\n.fngf-panel {\n  position: fixed;\n  z-index: 2147483646;\n  display: grid;\n  grid-gap: 10px;\n  min-width: 320px;\n  padding: 10px;\n  font-size: 12px;\n  color: #333;\n  cursor: default;\n  user-select: none;\n  background-color: #fffe;\n  box-shadow: 1px 2px 5px #0008;\n}\n\n.fngf-panel-body {\n  display: grid;\n  grid-gap: 10px;\n}\n\n.fngf-panel input[type='text'] {\n  padding: 4px;\n  font: inherit;\n  border: 1px solid #999;\n}\n\n.fngf-panel input[type='text']:focus {\n  box-shadow: 0 0 0 1px #999 inset;\n}\n\n.fngf-panel-terms {\n  display: grid;\n  grid-template-columns: 0 1fr 0;\n  grid-gap: 5px;\n  align-items: center;\n  width: 400px;\n  padding: 10px;\n  white-space: nowrap;\n  border: 1px solid #999;\n}\n\n.fngf-panel.root .fngf-panel-name,\n.fngf-panel.root .fngf-panel-terms {\n  display: none;\n}\n\n.fngf-panel-terms-textbox.error {\n  animation: error 1s;\n}\n\n.fngf-panel-rules {\n  padding: 10px;\n  border: 1px solid #999;\n}\n\n.fngf-panel fieldset {\n  padding: 10px;\n  margin: 0;\n}\n\n.fngf-panel-rule-name {\n  flex-grow: 1;\n}\n\n.fngf-panel-buttons {\n  justify-content: space-between;\n}\n\n.fngf-panel-buttons > .fngf-btn-group:not(:first-child) {\n  margin-left: 10px;\n}\n"
+      "@keyframes error {\n  from {\n    background-color: #ff0;\n    border-color: #f00;\n  }\n}\n\n.fngf-panel {\n  position: fixed;\n  z-index: 2147483646;\n  display: grid;\n  grid-gap: 10px;\n  min-width: 320px;\n  padding: 10px;\n  font-size: 12px;\n  color: #333;\n  cursor: default;\n  user-select: none;\n  background-color: #fffe;\n  box-shadow: 1px 2px 5px #0008;\n}\n\n.fngf-panel-body {\n  display: grid;\n  grid-gap: 10px;\n}\n\n.fngf-panel input[type='text'] {\n  padding: 4px;\n  font: inherit;\n  border: 1px solid #999;\n}\n\n.fngf-panel input[type='text']:focus {\n  box-shadow: 0 0 0 1px #999 inset;\n}\n\n.fngf-panel-terms {\n  display: grid;\n  grid-template-columns: auto 1fr auto;\n  grid-gap: 5px;\n  align-items: center;\n  width: 400px;\n  padding: 10px;\n  white-space: nowrap;\n  border: 1px solid #999;\n}\n\n.fngf-panel.root .fngf-panel-name,\n.fngf-panel.root .fngf-panel-terms {\n  display: none;\n}\n\n.fngf-panel-terms-textbox.error {\n  animation: error 1s;\n}\n\n.fngf-panel-rules {\n  padding: 10px;\n  border: 1px solid #999;\n}\n\n.fngf-panel fieldset {\n  padding: 10px;\n  margin: 0;\n}\n\n.fngf-panel-rule-name {\n  flex-grow: 1;\n}\n\n.fngf-panel-buttons {\n  justify-content: space-between;\n}\n\n.fngf-panel-buttons > .fngf-btn-group:not(:first-child) {\n  margin-left: 10px;\n}\n"
 
     function __(strings, ...values) {
       let key = values.map((v, i) => `${strings[i]}{${i}}`).join('') + strings[strings.length - 1]
@@ -1523,31 +1523,38 @@
     }
 
     function addSettingsMenuItem() {
-      const feedlyTabs = document.getElementById('feedlyTabs')
-
-      if (!feedlyTabs) {
+      if (!document.getElementById('filtertab')) {
         setTimeout(addSettingsMenuItem, 100)
         return
       }
 
       let prefListener
-      const observer = new MutationObserver(() => {
+
+      function onMutation() {
         if (document.getElementById('feedly-ng-filter-setting')) {
           return
-        } else if (prefListener) {
+        }
+
+        const nativeFilterItem = document.getElementById('filtertab')
+
+        if (!nativeFilterItem) {
+          return
+        }
+
+        if (prefListener) {
           pref.off('change', prefListener)
         }
 
         const { tab, label } = $el`
       <div class="tab" contextmenu="${MenuCommand.contextmenu.parentNode.id}" @click="${onNGSettingCommand}" ref="tab">
         <div class="header target">
-          <img class="icon" src="${GM_info.script.icon}">
-          <div class="label primary" id="feedly-ng-filter-setting" ref="label"></div>
+          <img class="icon" src="${GM_info.script.icon}" style="cursor: pointer;">
+          <div class="label nonEmpty" id="feedly-ng-filter-setting" ref="label"></div>
         </div>
       </div>
     `
         label.textContent = __`NG Setting`
-        feedlyTabs.appendChild(tab)
+        nativeFilterItem.parentNode.insertBefore(tab, nativeFilterItem.nextSibling)
         document.body.appendChild(contextmenu.parentNode)
 
         prefListener = ({ key }) => {
@@ -1557,10 +1564,13 @@
         }
 
         pref.on('change', prefListener)
-      })
-      observer.observe(feedlyTabs, {
+      }
+
+      new MutationObserver(onMutation).observe(document.getElementById('feedlyTabs'), {
         childList: true,
+        subtree: true,
       })
+      onMutation()
     }
 
     async function openFilePicker(multiple) {
