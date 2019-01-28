@@ -23,8 +23,9 @@
     "rimraf": "2.6.3"
   },
   "dependencies": {
-    "fix-meta": "file:packages/fix-meta",
     "add-circleci-workflows-link": "file:packages/add-circleci-workflows-link",
-    "esa-on-google": "file:packages/esa-on-google"
+    "esa-on-google": "file:packages/esa-on-google",
+    "fix-meta": "file:packages/fix-meta",
+    "niconizer-tweetdeck": "file:packages/niconizer-tweetdeck"
   }
 }
