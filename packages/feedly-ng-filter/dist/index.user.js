@@ -230,7 +230,7 @@
         set.add(listener)
       }
 
-      once(type, listener) {
+      async once(type, listener) {
         return new Promise((resolve, reject) => {
           function wrapper(event) {
             this.off(wrapper)
@@ -274,9 +274,13 @@
             try {
               EventEmitter.applyListener(this, listener, event)
             } catch (e) {
-              setTimeout(() => {
-                throw e
-              }, 0)
+              setTimeout(
+                () =>
+                  (function(e) {
+                    throw e
+                  })(e),
+                0,
+              )
             }
           })
         }
@@ -362,7 +366,6 @@
       constructor(label, oncommand) {
         this.label = label
         this.oncommand = oncommand
-        this.register()
       }
 
       register() {
@@ -383,6 +386,12 @@
 
         delete this.uuid
         document.adoptNode(this.menuitem)
+      }
+
+      static register(...args) {
+        const c = new MenuCommand(...args)
+        c.register()
+        return c
       }
     }
 
@@ -437,10 +446,7 @@
       }
 
       load(str) {
-        if (!str) {
-          str = GM_getValue(Preference.prefName, Preference.defaultPref || '({})')
-        }
-
+        str || (str = GM_getValue(Preference.prefName, Preference.defaultPref || '({})'))
         let obj
 
         try {
@@ -465,9 +471,11 @@
       }
 
       write() {
+        var _this$dict, _ref
+
         this.dict.__version__ = GM_info.script.version
-        const text = Serializer.stringify(this.dict)
-        GM_setValue(Preference.prefName, text)
+        ;(_ref = ((_this$dict = this.dict), Serializer.stringify.bind(Serializer)(_this$dict))),
+          GM_setValue(Preference.prefName, _ref)
       }
 
       autosave() {
@@ -475,7 +483,7 @@
           return
         }
 
-        window.addEventListener('unload', () => this.write(), false)
+        window.addEventListener('unload', this.write.bind(this), false)
         this.autosaveReserved = true
       }
 
@@ -559,6 +567,8 @@
       }
 
       onmousedown(event) {
+        var _this$element$querySe
+
         if (event.button !== 0) {
           return
         }
@@ -568,12 +578,9 @@
         }
 
         event.preventDefault()
-        const focused = this.element.querySelector(':focus')
-
-        if (focused) {
-          focused.blur()
-        }
-
+        ;(_this$element$querySe = this.element.querySelector(':focus')) === null || _this$element$querySe === void 0
+          ? void 0
+          : _this$element$querySe.blur()
         this.offsetX = event.pageX - this.element.offsetLeft
         this.offsetY = event.pageY - this.element.offsetTop
         document.addEventListener('mousemove', this, true, false)
@@ -587,13 +594,11 @@
       }
 
       onmouseup(event) {
-        if (event.button !== 0) {
-          return
+        if (event.button === 0) {
+          event.preventDefault()
+          document.removeEventListener('mousemove', this, true)
+          document.removeEventListener('mouseup', this, true)
         }
-
-        event.preventDefault()
-        document.removeEventListener('mousemove', this, true)
-        document.removeEventListener('mouseup', this, true)
       }
     }
 
@@ -697,9 +702,9 @@
       }
 
       get body() {
-        var _ref
+        var _ref2
 
-        return (_ref = this.data.content || this.data.summary) === null || _ref === void 0 ? void 0 : _ref.content
+        return (_ref2 = this.data.content || this.data.summary) === null || _ref2 === void 0 ? void 0 : _ref2.content
       }
 
       get author() {
@@ -755,17 +760,17 @@
         }
 
         const { element, body, buttons } = $el`
-        <form class="fngf-panel" @submit="${onSubmit}" @keydown="${onKeyPress}" ref="element">
-          <input type="submit" style="display: none;">
-          <div class="fngf-panel-body fngf-column" ref="body"></div>
-          <div class="fngf-panel-buttons fngf-row" ref="buttons">
-            <div class="fngf-btn-group fngf-row">
-              <button type="button" class="fngf-btn" @click="${() => this.apply()}">${__`OK`}</button>
-              <button type="button" class="fngf-btn" @click="${() => this.close()}">${__`Cancel`}</button>
-            </div>
+      <form class="fngf-panel" @submit="${onSubmit}" @keydown="${onKeyPress}" ref="element">
+        <input type="submit" style="display: none;">
+        <div class="fngf-panel-body fngf-column" ref="body"></div>
+        <div class="fngf-panel-buttons fngf-row" ref="buttons">
+          <div class="fngf-btn-group fngf-row">
+            <button type="button" class="fngf-btn" @click="${this.apply.bind(this)}">${__`OK`}</button>
+            <button type="button" class="fngf-btn" @click="${this.close.bind(this)}">${__`Cancel`}</button>
           </div>
-        </form>
-      `
+        </div>
+      </form>
+    `
         new Draggable(element)
         this.dom = {
           element,
@@ -775,7 +780,7 @@
       }
 
       open(anchorElement) {
-        var _anchorElement
+        var _anchorElement, _document$querySelect
 
         if (this.opened) {
           return
@@ -804,12 +809,9 @@
           this.on('hidden', () => window.removeEventListener('resize', onWindowResize, false))
         }
 
-        const focused = document.querySelector(':focus')
-
-        if (focused) {
-          focused.blur()
-        }
-
+        ;(_document$querySelect = document.querySelector(':focus')) === null || _document$querySelect === void 0
+          ? void 0
+          : _document$querySelect.blur()
         const selector = ':not(.feedlyng-panel) > :-webkit-any(button, input, select, textarea, [tabindex])'
         const ctrl = Array.from(this.dom.element.querySelectorAll(selector)).sort(
           (a, b) => (b.tabIndex || 0) < (a.tabIndex || 0),
@@ -968,11 +970,11 @@
         }
 
         const { buttons, paste } = $el`
-        <div class="fngf-btn-group fngf-row" ref="buttons">
-          <button type="button" class="fngf-btn" @click="${onAdd}">${__`Add`}</button>
-          <button type="button" class="fngf-btn" @click="${onPaste}" ref="paste" disabled>${__`Paste`}</button>
-        </div>
-      `
+      <div class="fngf-btn-group fngf-row" ref="buttons">
+        <button type="button" class="fngf-btn" @click="${onAdd}">${__`Add`}</button>
+        <button type="button" class="fngf-btn" @click="${onPaste}" ref="paste" disabled>${__`Paste`}</button>
+      </div>
+    `
 
         function pasteState() {
           paste.disabled = !clipboard.data
@@ -982,7 +984,7 @@
         clipboard.on('purge', pasteState)
         pasteState()
         this.dom.buttons.insertBefore(buttons, this.dom.buttons.firstChild)
-        this.on('escape', () => this.close())
+        this.on('escape', this.close.bind(this))
         this.on('showing', this.initContents)
         this.on('apply', this)
         this.on('hidden', () => {
@@ -994,15 +996,15 @@
       initContents() {
         const filter = this.filter
         const { name, terms, rules } = $el`
-        <div class="fngf-panel-name fngf-row fngf-align-center" ref="name">
-          ${__`Rule Name`}&nbsp;
-          <input type="text" value="${filter.name}" autocomplete="off" name="name" class="fngf-grow">
-        </div>
-        <div class="fngf-panel-terms" ref="terms"></div>
-        <div class="fngf-panel-rules fngf-column" ref="rules">
-          <div class="fngf-panel-rule fngf-row fngf-align-center fngf-only">${__`No Rules`}</div>
-        </div>
-      `
+      <div class="fngf-panel-name fngf-row fngf-align-center" ref="name">
+        ${__`Rule Name`}&nbsp;
+        <input type="text" value="${filter.name}" autocomplete="off" name="name" class="fngf-grow">
+      </div>
+      <div class="fngf-panel-terms" ref="terms"></div>
+      <div class="fngf-panel-rules fngf-column" ref="rules">
+        <div class="fngf-panel-rule fngf-row fngf-align-center fngf-only">${__`No Rules`}</div>
+      </div>
+    `
         const labels = [
           ['title', __`Title`],
           ['url', __`URL`],
@@ -1018,15 +1020,15 @@
           const reg = filter.regexp[type]
           const sourceValue = reg ? reg.source.replace(/((?:^|[^\\])(?:\\\\)*)\\(?=\/)/g, '$1') : ''
           terms.appendChild($el`
-          <label for="${randomId}">${labelText}</label>
-          <input type="text" class="fngf-panel-terms-textbox" id="${randomId}" autocomplete="off" name="regexp.${type}.source" value="${sourceValue}">
-          <label class="fngf-checkbox fngf-row" title="${__`Ignore Case`}">
-            <input type="checkbox" name="regexp.${type}.ignoreCase" bool:checked="${
+        <label for="${randomId}">${labelText}</label>
+        <input type="text" class="fngf-panel-terms-textbox" id="${randomId}" autocomplete="off" name="regexp.${type}.source" value="${sourceValue}">
+        <label class="fngf-checkbox fngf-row" title="${__`Ignore Case`}">
+          <input type="checkbox" name="regexp.${type}.ignoreCase" bool:checked="${
             reg === null || reg === void 0 ? void 0 : reg.ignoreCase
           }">
-            <span class="fngf-btn" tabindex="0">i</span>
-          </label>
-        `)
+          <span class="fngf-btn" tabindex="0">i</span>
+        </label>
+      `)
         }
 
         this.appendContent([name, terms, rules])
@@ -1074,20 +1076,20 @@
         }
 
         const { rule, name, count, btnEdit } = $el`
-        <div class="fngf-panel-rule fngf-row fngf-align-center" ref="rule">
-          <div class="fngf-panel-rule-name" @dblclick="${onEdit}" ref="name"></div>
-          <div class="fngf-panel-rule-count fngf-badge" ref="count"></div>
-          <div class="fngf-panel-rule-actions fngf-btn-group fngf-menu-btn fngf-row" ref="buttons">
-            <button type="button" class="fngf-btn" @click="${onEdit}" ref="btnEdit">${__`Edit`}</button>
-            <div class="fngf-dropdown fngf-btn" tabindex="0">
-              <div class="fngf-dropdown-menu fngf-column">
-                <div class="fngf-dropdown-menu-item" @click="${onCopy}">${__`Copy`}</div>
-                <div class="fngf-dropdown-menu-item" @click="${onDelete}">${__`Delete`}</div>
-              </div>
+      <div class="fngf-panel-rule fngf-row fngf-align-center" ref="rule">
+        <div class="fngf-panel-rule-name" @dblclick="${onEdit}" ref="name"></div>
+        <div class="fngf-panel-rule-count fngf-badge" ref="count"></div>
+        <div class="fngf-panel-rule-actions fngf-btn-group fngf-menu-btn fngf-row" ref="buttons">
+          <button type="button" class="fngf-btn" @click="${onEdit}" ref="btnEdit">${__`Edit`}</button>
+          <div class="fngf-dropdown fngf-btn" tabindex="0">
+            <div class="fngf-dropdown-menu fngf-column">
+              <div class="fngf-dropdown-menu-item" @click="${onCopy}">${__`Copy`}</div>
+              <div class="fngf-dropdown-menu-item" @click="${onDelete}">${__`Delete`}</div>
             </div>
           </div>
         </div>
-      `
+      </div>
+    `
         updateRow()
         this.dom.rules.appendChild(rule)
       }
@@ -1156,73 +1158,73 @@
         ],
       },
     })
-    evalInContent(String.raw`
-    (() => {
-      const XHR = XMLHttpRequest;
-      let uniqueId = 0;
+    evalInContent(() => {
+      const XHR = XMLHttpRequest
+      let uniqueId = 0
 
-      XMLHttpRequest = function XMLHttpRequest() {
-        const req = new XHR();
+      window.XMLHttpRequest = function XMLHttpRequest() {
+        const req = new XHR()
+        req.open = open
+        req.setRequestHeader = setRequestHeader
+        req.addEventListener('readystatechange', onReadyStateChange, false)
+        return req
+      }
 
-        req.open = open;
-        req.setRequestHeader = setRequestHeader;
-        req.addEventListener('readystatechange', onReadyStateChange, false);
-
-        return req;
-      };
-
-      function open(method, url, async) {
-        this.__url__ = url;
-
-        return XHR.prototype.open.apply(this, arguments);
+      function open(method, url, ...args) {
+        this.__url__ = url
+        return XHR.prototype.open.call(this, method, url, ...args)
       }
 
       function setRequestHeader(header, value) {
-        if (header === 'Authorization')
-          this.__auth__ = value;
+        if (header === 'Authorization') {
+          this.__auth__ = value
+        }
 
-        return XHR.prototype.setRequestHeader.apply(this, arguments);
+        return XHR.prototype.setRequestHeader.call(this, header, value)
       }
 
       function onReadyStateChange() {
-        if (this.readyState < 4 || this.status !== 200)
-          return;
+        if (this.readyState < 4 || this.status !== 200) {
+          return
+        }
 
-        if (!/^(?:https?:)?\/\/(?:cloud\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__))
-          return;
+        if (!/^(?:https?:)?\/\/(?:cloud\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) {
+          return
+        }
 
-        const pongEventType = 'streamcontentloaded_callback' + uniqueId++;
-
+        const pongEventType = 'streamcontentloaded_callback' + uniqueId++
         const data = JSON.stringify({
           type: pongEventType,
           auth: this.__auth__,
           text: this.responseText,
-        });
-
+        })
         const event = new MessageEvent('streamcontentloaded', {
           bubbles: true,
           cancelable: false,
           data: data,
           origin: location.href,
           source: null,
-        });
+        })
 
-        let onPong = ({data}) => Object.defineProperty(this, 'responseText', {configurable: true, value: data});
+        const onPong = ({ data }) =>
+          Object.defineProperty(this, 'responseText', {
+            configurable: true,
+            value: data,
+          })
 
-        document.addEventListener(pongEventType, onPong, false);
-        document.dispatchEvent(event);
-        document.removeEventListener(pongEventType, onPong, false);
+        document.addEventListener(pongEventType, onPong, false)
+        document.dispatchEvent(event)
+        document.removeEventListener(pongEventType, onPong, false)
       }
-    })();
-  `)
+    })
     const clipboard = new DataTransfer()
     const pref = new Preference()
     let rootFilterPanel
     let { contextmenu } = $el`
-    <menu type="context" id="feedlyng-contextmenu">
-      <menu type="context" label="${__`Feedly NG Filter`}" ref="contextmenu"></menu>
-    </menu>
-  `
+  <menu type="context" id="feedlyng-contextmenu">
+    <menu type="context" label="${__`Feedly NG Filter`}" ref="contextmenu"></menu>
+  </menu>
+`
     MenuCommand.contextmenu = contextmenu
     pref.on('change', function({ key, newValue }) {
       switch (key) {
@@ -1317,16 +1319,13 @@
           target.classList.toggle('active')
         }
 
-        target = closest(target, '.fngf-dropdown')
+        if (!target.closest('.fngf-dropdown')) {
+          var _document$querySelect2
 
-        if (target) {
-          return
-        }
-
-        const opened = document.querySelector('.fngf-dropdown.active')
-
-        if (opened) {
-          opened.classList.remove('active')
+          ;(_document$querySelect2 = document.querySelector('.fngf-dropdown.active')) === null ||
+          _document$querySelect2 === void 0
+            ? void 0
+            : _document$querySelect2.classList.remove('active')
         }
       },
       true,
@@ -1334,14 +1333,12 @@
     document.addEventListener(
       'click',
       ({ target }) => {
-        if (!closest(target, '.fngf-dropdown-menu-item')) {
-          return
-        }
+        if (target.closest('.fngf-dropdown-menu-item')) {
+          var _target$closest
 
-        target = closest(target, '.fngf-dropdown')
-
-        if (target) {
-          target.classList.remove('active')
+          ;(_target$closest = target.closest('.fngf-dropdown')) === null || _target$closest === void 0
+            ? void 0
+            : _target$closest.classList.remove('active')
         }
       },
       true,
@@ -1367,13 +1364,12 @@
               return
             }
 
-            const frag = document.createDocumentFragment()
+            values[i] = document.createDocumentFragment()
 
             for (const item of v) {
-              frag.appendChild(item)
+              values[i].appendChild(item)
             }
 
-            values[i] = frag
             return
           }
 
@@ -1389,16 +1385,11 @@
       container.appendChild(renderer.content)
       refs.first = container.firstElementChild
       refs.last = container.lastElementChild
-      const xpath = document.evaluate(
-        `
-      .//*[@ref or @*[starts-with(name(), "@") or contains(name(), ":")]] |
-      .//comment()[starts-with(., "${$el.dataPrefix}")]
-    `,
-        container,
-        null,
-        7,
-        null,
-      )
+      const exp = `
+    .//*[@ref or @*[starts-with(name(), "@") or contains(name(), ":")]] |
+    .//comment()[starts-with(., "${$el.dataPrefix}")]
+  `
+      const xpath = document.evaluate(exp, container, null, 7, null)
 
       for (let i = 0; i < xpath.snapshotLength; i++) {
         const el = xpath.snapshotItem(i)
@@ -1448,55 +1439,31 @@
       }
     }
 
-    function closest(target, selector) {
-      while (target && target instanceof Element) {
-        if (target.matches(selector)) {
-          return target
-        }
-
-        target = target.parentNode
-      }
-
-      return null
-    }
-
     function xhr(details) {
       const opt = { ...details }
       const { data } = opt
-
-      if (!opt.method) {
-        opt.method = data ? 'POST' : 'GET'
-      }
+      opt.method || (opt.method = data ? 'POST' : 'GET')
 
       if (data instanceof Object) {
-        const arr = []
-        const enc = encodeURIComponent
-
-        for (const key in data) {
-          arr.push(`${enc(key)}=${enc(data[key])}`)
-        }
-
-        opt.data = arr.join('&')
-
-        if (!opt.headers) {
-          opt.headers = {}
-        }
-
+        opt.headers || (opt.headers = {})
         opt.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8'
+        opt.data = Object.entries(data)
+          .map(kv => kv.map(encodeURIComponent).join('='))
+          .join('&')
       }
 
       setTimeout(() => GM_xmlhttpRequest(opt), 0)
     }
 
     function registerMenuCommands() {
-      menuCommand(`${__`Setting`}...`, togglePrefPanel)
-      menuCommand(`${__`Language`}...`, () => {
+      MenuCommand.register(`${__`Setting`}...`, togglePrefPanel)
+      MenuCommand.register(`${__`Language`}...`, () => {
         const { langField, select } = $el(`
-        <fieldset ref="langField">
-          <legend>${__`Language`}</legend>
-          <select ref="select"></select>
-        </fieldset>
-      `)
+      <fieldset ref="langField">
+        <legend>${__`Language`}</legend>
+        <select ref="select"></select>
+      </fieldset>
+    `)
 
         __.languages.forEach(lang => {
           const option = $el(`<option value="${lang}">${lang}</option>`).first
@@ -1513,18 +1480,14 @@
         panel.on('apply', () => pref.set('language', select.value))
         panel.open()
       })
-      menuCommand(`${__`Import Configuration`}...`, () => pref.importFromFile())
-      menuCommand(__`Export Configuration`, () => pref.exportToFile())
+      MenuCommand.register(`${__`Import Configuration`}...`, pref.importFromFile.bind(pref))
+      MenuCommand.register(__`Export Configuration`, pref.exportToFile.bind(pref))
     }
 
     function sendJSON(details) {
       const opt = { ...details }
       const { data } = opt
-
-      if (!opt.headers) {
-        opt.headers = {}
-      }
-
+      opt.headers || (opt.headers = {})
       opt.method = 'POST'
       opt.headers['Content-Type'] = 'application/json; charset=utf-8'
       opt.data = JSON.stringify(data)
@@ -1533,7 +1496,7 @@
 
     function evalInContent(code) {
       const script = document.createElement('script')
-      script.textContent = code
+      script.textContent = typeof code === 'function' ? `(${code})()` : code
       document.documentElement.appendChild(script)
       document.adoptNode(script)
     }
@@ -1576,15 +1539,13 @@
         }
 
         const { tab, label } = $el`
-        <div class="tab" contextmenu="${
-          MenuCommand.contextmenu.parentNode.id
-        }" @click="${onNGSettingCommand}" ref="tab">
-          <div class="header target">
-            <img class="icon" src="${GM_info.script.icon}">
-            <div class="label primary" id="feedly-ng-filter-setting" ref="label"></div>
-          </div>
+      <div class="tab" contextmenu="${MenuCommand.contextmenu.parentNode.id}" @click="${onNGSettingCommand}" ref="tab">
+        <div class="header target">
+          <img class="icon" src="${GM_info.script.icon}">
+          <div class="label primary" id="feedly-ng-filter-setting" ref="label"></div>
         </div>
-      `
+      </div>
+    `
         label.textContent = __`NG Setting`
         feedlyTabs.appendChild(tab)
         document.body.appendChild(contextmenu.parentNode)
@@ -1602,19 +1563,19 @@
       })
     }
 
-    function menuCommand(label, fn) {
-      return new MenuCommand(label, fn)
-    }
-
-    function openFilePicker(multiple) {
+    async function openFilePicker(multiple) {
       return new Promise(resolve => {
-        const { input } = $el`<input type="file" @change="${() => resolve(Array.from(input.files))}" ref="input">`
+        const input = $el`<input type="file" @change="${() => {
+          var _input$files, _ref3
+
+          return (_ref3 = ((_input$files = input.files), Array.from(_input$files))), resolve(_ref3)
+        }}">`.first
         input.multiple = multiple
         input.click()
       })
     }
 
-    function notify(body, options) {
+    async function notify(body, options) {
       options = {
         body,
         ...notificationDefaults,
@@ -1630,7 +1591,7 @@
           const n = new Notification(options.title, options)
 
           if (options.autoClose) {
-            setTimeout(() => n.close(), options.autoClose)
+            setTimeout(n.close.bind(n), options.autoClose)
           }
 
           resolve(n)

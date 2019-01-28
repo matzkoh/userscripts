@@ -225,7 +225,7 @@ class EventEmitter {
     set.add(listener)
   }
 
-  once(type, listener) {
+  async once(type, listener) {
     return new Promise((resolve, reject) => {
       function wrapper(event) {
         this.off(wrapper)
@@ -280,9 +280,7 @@ class EventEmitter {
 
   emit(type, data) {
     const event = this.createEvent(type)
-
     Object.assign(event, data)
-
     return this.dispatchEvent(event)
   }
 
@@ -354,8 +352,6 @@ class MenuCommand {
   constructor(label, oncommand) {
     this.label = label
     this.oncommand = oncommand
-
-    this.register()
   }
 
   register() {
@@ -377,6 +373,12 @@ class MenuCommand {
     delete this.uuid
     document.adoptNode(this.menuitem)
   }
+
+  static register(...args) {
+    const c = new MenuCommand(...args)
+    c.register()
+    return c
+  }
 }
 
 MenuCommand.contextmenu = null
@@ -390,7 +392,6 @@ class Preference extends EventEmitter {
     }
 
     Preference._instance = this
-
     this.dict = {}
   }
 
@@ -407,11 +408,7 @@ class Preference extends EventEmitter {
 
     if (newValue !== prevValue) {
       this.dict[key] = newValue
-      this.emit('change', {
-        key,
-        prevValue,
-        newValue,
-      })
+      this.emit('change', { key, prevValue, newValue })
     }
 
     return newValue
@@ -433,9 +430,7 @@ class Preference extends EventEmitter {
   }
 
   load(str) {
-    if (!str) {
-      str = GM_getValue(Preference.prefName, Preference.defaultPref || '({})')
-    }
+    str ||= GM_getValue(Preference.prefName, Preference.defaultPref || '({})')
 
     let obj
 
@@ -462,10 +457,7 @@ class Preference extends EventEmitter {
 
   write() {
     this.dict.__version__ = GM_info.script.version
-
-    const text = Serializer.stringify(this.dict)
-
-    GM_setValue(Preference.prefName, text)
+    this.dict |> ::Serializer.stringify |> (_ => GM_setValue(Preference.prefName, _))
   }
 
   autosave() {
@@ -473,17 +465,13 @@ class Preference extends EventEmitter {
       return
     }
 
-    window.addEventListener('unload', () => this.write(), false)
+    window.addEventListener('unload', ::this.write, false)
     this.autosaveReserved = true
   }
 
   exportToFile() {
-    const blob = new Blob([this.serialize()], {
-      type: 'application/octet-stream',
-    })
-
+    const blob = new Blob([this.serialize()], { type: 'application/octet-stream' })
     const url = URL.createObjectURL(blob)
-
     location.assign(url)
     URL.revokeObjectURL(url)
   }
@@ -509,7 +497,6 @@ class Preference extends EventEmitter {
   importFromFile() {
     openFilePicker().then(([file]) => {
       const reader = new FileReader()
-
       reader.addEventListener('load', () => this.importFromString(reader.result), false)
       reader.readAsText(file)
     })
@@ -530,7 +517,6 @@ class Draggable {
   constructor(element, ignore = 'select, button, input, textarea, [tabindex]') {
     this.element = element
     this.ignore = ignore
-
     this.attach()
   }
 
@@ -573,11 +559,7 @@ class Draggable {
 
     event.preventDefault()
 
-    const focused = this.element.querySelector(':focus')
-
-    if (focused) {
-      focused.blur()
-    }
+    this.element.querySelector(':focus')?.blur()
 
     this.offsetX = event.pageX - this.element.offsetLeft
     this.offsetY = event.pageY - this.element.offsetTop
@@ -588,20 +570,16 @@ class Draggable {
 
   onmousemove(event) {
     event.preventDefault()
-
     this.element.style.left = `${event.pageX - this.offsetX}px`
     this.element.style.top = `${event.pageY - this.offsetY}px`
   }
 
   onmouseup(event) {
-    if (event.button !== 0) {
-      return
+    if (event.button === 0) {
+      event.preventDefault()
+      document.removeEventListener('mousemove', this, true)
+      document.removeEventListener('mouseup', this, true)
     }
-
-    event.preventDefault()
-
-    document.removeEventListener('mousemove', this, true)
-    document.removeEventListener('mouseup', this, true)
   }
 }
 
@@ -745,17 +723,17 @@ class Panel extends EventEmitter {
     }
 
     const { element, body, buttons } = $el`
-        <form class="fngf-panel" @submit="${onSubmit}" @keydown="${onKeyPress}" ref="element">
-          <input type="submit" style="display: none;">
-          <div class="fngf-panel-body fngf-column" ref="body"></div>
-          <div class="fngf-panel-buttons fngf-row" ref="buttons">
-            <div class="fngf-btn-group fngf-row">
-              <button type="button" class="fngf-btn" @click="${() => this.apply()}">${__`OK`}</button>
-              <button type="button" class="fngf-btn" @click="${() => this.close()}">${__`Cancel`}</button>
-            </div>
+      <form class="fngf-panel" @submit="${onSubmit}" @keydown="${onKeyPress}" ref="element">
+        <input type="submit" style="display: none;">
+        <div class="fngf-panel-body fngf-column" ref="body"></div>
+        <div class="fngf-panel-buttons fngf-row" ref="buttons">
+          <div class="fngf-btn-group fngf-row">
+            <button type="button" class="fngf-btn" @click="${::this.apply}">${__`OK`}</button>
+            <button type="button" class="fngf-btn" @click="${::this.close}">${__`Cancel`}</button>
           </div>
-        </form>
-      `
+        </div>
+      </form>
+    `
 
     new Draggable(element)
 
@@ -786,16 +764,11 @@ class Panel extends EventEmitter {
 
     if (anchorElement) {
       const onWindowResize = () => this.snapTo(anchorElement)
-
       window.addEventListener('resize', onWindowResize, false)
       this.on('hidden', () => window.removeEventListener('resize', onWindowResize, false))
     }
 
-    const focused = document.querySelector(':focus')
-
-    if (focused) {
-      focused.blur()
-    }
+    document.querySelector(':focus')?.blur()
 
     const selector = ':not(.feedlyng-panel) > :-webkit-any(button, input, select, textarea, [tabindex])'
     const ctrl = Array.from(this.dom.element.querySelectorAll(selector)).sort(
@@ -944,7 +917,6 @@ class FilterListPanel extends Panel {
 
     const onAdd = () => {
       const filter = new Filter()
-
       filter.name = __`New Filter`
       this.on('apply', () => this.filter.appendChild(filter))
       this.appendFilter(filter)
@@ -956,17 +928,16 @@ class FilterListPanel extends Panel {
       }
 
       const filter = new Filter(clipboard.receive())
-
       this.on('apply', () => this.filter.appendChild(filter))
       this.appendFilter(filter)
     }
 
     const { buttons, paste } = $el`
-        <div class="fngf-btn-group fngf-row" ref="buttons">
-          <button type="button" class="fngf-btn" @click="${onAdd}">${__`Add`}</button>
-          <button type="button" class="fngf-btn" @click="${onPaste}" ref="paste" disabled>${__`Paste`}</button>
-        </div>
-      `
+      <div class="fngf-btn-group fngf-row" ref="buttons">
+        <button type="button" class="fngf-btn" @click="${onAdd}">${__`Add`}</button>
+        <button type="button" class="fngf-btn" @click="${onPaste}" ref="paste" disabled>${__`Paste`}</button>
+      </div>
+    `
 
     function pasteState() {
       paste.disabled = !clipboard.data
@@ -978,7 +949,7 @@ class FilterListPanel extends Panel {
 
     this.dom.buttons.insertBefore(buttons, this.dom.buttons.firstChild)
 
-    this.on('escape', () => this.close())
+    this.on('escape', ::this.close)
     this.on('showing', this.initContents)
     this.on('apply', this)
     this.on('hidden', () => {
@@ -990,15 +961,15 @@ class FilterListPanel extends Panel {
   initContents() {
     const filter = this.filter
     const { name, terms, rules } = $el`
-        <div class="fngf-panel-name fngf-row fngf-align-center" ref="name">
-          ${__`Rule Name`}&nbsp;
-          <input type="text" value="${filter.name}" autocomplete="off" name="name" class="fngf-grow">
-        </div>
-        <div class="fngf-panel-terms" ref="terms"></div>
-        <div class="fngf-panel-rules fngf-column" ref="rules">
-          <div class="fngf-panel-rule fngf-row fngf-align-center fngf-only">${__`No Rules`}</div>
-        </div>
-      `
+      <div class="fngf-panel-name fngf-row fngf-align-center" ref="name">
+        ${__`Rule Name`}&nbsp;
+        <input type="text" value="${filter.name}" autocomplete="off" name="name" class="fngf-grow">
+      </div>
+      <div class="fngf-panel-terms" ref="terms"></div>
+      <div class="fngf-panel-rules fngf-column" ref="rules">
+        <div class="fngf-panel-rule fngf-row fngf-align-center fngf-only">${__`No Rules`}</div>
+      </div>
+    `
 
     const labels = [
       ['title', __`Title`],
@@ -1016,13 +987,13 @@ class FilterListPanel extends Panel {
       const sourceValue = reg ? reg.source.replace(/((?:^|[^\\])(?:\\\\)*)\\(?=\/)/g, '$1') : ''
 
       terms.appendChild($el`
-          <label for="${randomId}">${labelText}</label>
-          <input type="text" class="fngf-panel-terms-textbox" id="${randomId}" autocomplete="off" name="regexp.${type}.source" value="${sourceValue}">
-          <label class="fngf-checkbox fngf-row" title="${__`Ignore Case`}">
-            <input type="checkbox" name="regexp.${type}.ignoreCase" bool:checked="${reg?.ignoreCase}">
-            <span class="fngf-btn" tabindex="0">i</span>
-          </label>
-        `)
+        <label for="${randomId}">${labelText}</label>
+        <input type="text" class="fngf-panel-terms-textbox" id="${randomId}" autocomplete="off" name="regexp.${type}.source" value="${sourceValue}">
+        <label class="fngf-checkbox fngf-row" title="${__`Ignore Case`}">
+          <input type="checkbox" name="regexp.${type}.ignoreCase" bool:checked="${reg?.ignoreCase}">
+          <span class="fngf-btn" tabindex="0">i</span>
+        </label>
+      `)
     }
 
     this.appendContent([name, terms, rules])
@@ -1071,20 +1042,20 @@ class FilterListPanel extends Panel {
     }
 
     const { rule, name, count, btnEdit } = $el`
-        <div class="fngf-panel-rule fngf-row fngf-align-center" ref="rule">
-          <div class="fngf-panel-rule-name" @dblclick="${onEdit}" ref="name"></div>
-          <div class="fngf-panel-rule-count fngf-badge" ref="count"></div>
-          <div class="fngf-panel-rule-actions fngf-btn-group fngf-menu-btn fngf-row" ref="buttons">
-            <button type="button" class="fngf-btn" @click="${onEdit}" ref="btnEdit">${__`Edit`}</button>
-            <div class="fngf-dropdown fngf-btn" tabindex="0">
-              <div class="fngf-dropdown-menu fngf-column">
-                <div class="fngf-dropdown-menu-item" @click="${onCopy}">${__`Copy`}</div>
-                <div class="fngf-dropdown-menu-item" @click="${onDelete}">${__`Delete`}</div>
-              </div>
+      <div class="fngf-panel-rule fngf-row fngf-align-center" ref="rule">
+        <div class="fngf-panel-rule-name" @dblclick="${onEdit}" ref="name"></div>
+        <div class="fngf-panel-rule-count fngf-badge" ref="count"></div>
+        <div class="fngf-panel-rule-actions fngf-btn-group fngf-menu-btn fngf-row" ref="buttons">
+          <button type="button" class="fngf-btn" @click="${onEdit}" ref="btnEdit">${__`Edit`}</button>
+          <div class="fngf-dropdown fngf-btn" tabindex="0">
+            <div class="fngf-dropdown-menu fngf-column">
+              <div class="fngf-dropdown-menu-item" @click="${onCopy}">${__`Copy`}</div>
+              <div class="fngf-dropdown-menu-item" @click="${onDelete}">${__`Delete`}</div>
             </div>
           </div>
         </div>
-      `
+      </div>
+    `
 
     updateRow()
     this.dom.rules.appendChild(rule)
@@ -1156,75 +1127,76 @@ Preference.defaultPref = Serializer.stringify({
   },
 })
 
-evalInContent(String.raw`
-    (() => {
-      const XHR = XMLHttpRequest;
-      let uniqueId = 0;
+evalInContent(() => {
+  const XHR = XMLHttpRequest
+  let uniqueId = 0
 
-      XMLHttpRequest = function XMLHttpRequest() {
-        const req = new XHR();
+  window.XMLHttpRequest = function XMLHttpRequest() {
+    const req = new XHR()
 
-        req.open = open;
-        req.setRequestHeader = setRequestHeader;
-        req.addEventListener('readystatechange', onReadyStateChange, false);
+    req.open = open
+    req.setRequestHeader = setRequestHeader
+    req.addEventListener('readystatechange', onReadyStateChange, false)
 
-        return req;
-      };
+    return req
+  }
 
-      function open(method, url, async) {
-        this.__url__ = url;
+  function open(method, url, ...args) {
+    this.__url__ = url
 
-        return XHR.prototype.open.apply(this, arguments);
-      }
+    return this::XHR.prototype.open(method, url, ...args)
+  }
 
-      function setRequestHeader(header, value) {
-        if (header === 'Authorization')
-          this.__auth__ = value;
+  function setRequestHeader(header, value) {
+    if (header === 'Authorization') {
+      this.__auth__ = value
+    }
 
-        return XHR.prototype.setRequestHeader.apply(this, arguments);
-      }
+    return this::XHR.prototype.setRequestHeader(header, value)
+  }
 
-      function onReadyStateChange() {
-        if (this.readyState < 4 || this.status !== 200)
-          return;
+  function onReadyStateChange() {
+    if (this.readyState < 4 || this.status !== 200) {
+      return
+    }
 
-        if (!/^(?:https?:)?\/\/(?:cloud\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__))
-          return;
+    if (!/^(?:https?:)?\/\/(?:cloud\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) {
+      return
+    }
 
-        const pongEventType = 'streamcontentloaded_callback' + uniqueId++;
+    const pongEventType = 'streamcontentloaded_callback' + uniqueId++
 
-        const data = JSON.stringify({
-          type: pongEventType,
-          auth: this.__auth__,
-          text: this.responseText,
-        });
+    const data = JSON.stringify({
+      type: pongEventType,
+      auth: this.__auth__,
+      text: this.responseText,
+    })
 
-        const event = new MessageEvent('streamcontentloaded', {
-          bubbles: true,
-          cancelable: false,
-          data: data,
-          origin: location.href,
-          source: null,
-        });
+    const event = new MessageEvent('streamcontentloaded', {
+      bubbles: true,
+      cancelable: false,
+      data: data,
+      origin: location.href,
+      source: null,
+    })
 
-        let onPong = ({data}) => Object.defineProperty(this, 'responseText', {configurable: true, value: data});
+    const onPong = ({ data }) => Object.defineProperty(this, 'responseText', { configurable: true, value: data })
 
-        document.addEventListener(pongEventType, onPong, false);
-        document.dispatchEvent(event);
-        document.removeEventListener(pongEventType, onPong, false);
-      }
-    })();
-  `)
+    document.addEventListener(pongEventType, onPong, false)
+    document.dispatchEvent(event)
+    document.removeEventListener(pongEventType, onPong, false)
+  }
+})
 
 const clipboard = new DataTransfer()
 const pref = new Preference()
 
 let rootFilterPanel
 let { contextmenu } = $el`
-    <menu type="context" id="feedlyng-contextmenu">
-      <menu type="context" label="${__`Feedly NG Filter`}" ref="contextmenu"></menu>
-    </menu>
-  `
+  <menu type="context" id="feedlyng-contextmenu">
+    <menu type="context" label="${__`Feedly NG Filter`}" ref="contextmenu"></menu>
+  </menu>
+`
 
 MenuCommand.contextmenu = contextmenu
 
@@ -1234,7 +1206,6 @@ pref.on('change', function({ key, newValue }) {
       if (!(newValue instanceof Filter)) {
         this.set('filter', new Filter(newValue))
       }
-
       break
 
     case 'language':
@@ -1327,16 +1298,8 @@ document.addEventListener(
       target.classList.toggle('active')
     }
 
-    target = closest(target, '.fngf-dropdown')
-
-    if (target) {
-      return
-    }
-
-    const opened = document.querySelector('.fngf-dropdown.active')
-
-    if (opened) {
-      opened.classList.remove('active')
+    if (!target.closest('.fngf-dropdown')) {
+      document.querySelector('.fngf-dropdown.active')?.classList.remove('active')
     }
   },
   true,
@@ -1345,14 +1308,8 @@ document.addEventListener(
 document.addEventListener(
   'click',
   ({ target }) => {
-    if (!closest(target, '.fngf-dropdown-menu-item')) {
-      return
-    }
-
-    target = closest(target, '.fngf-dropdown')
-
-    if (target) {
-      target.classList.remove('active')
+    if (target.closest('.fngf-dropdown-menu-item')) {
+      target.closest('.fngf-dropdown')?.classList.remove('active')
     }
   },
   true,
@@ -1378,13 +1335,10 @@ function $el(strings, ...values) {
           return
         }
 
-        const frag = document.createDocumentFragment()
-
+        values[i] = document.createDocumentFragment()
         for (const item of v) {
-          frag.appendChild(item)
+          values[i].appendChild(item)
         }
-
-        values[i] = frag
 
         return
       }
@@ -1405,23 +1359,17 @@ function $el(strings, ...values) {
   refs.first = container.firstElementChild
   refs.last = container.lastElementChild
 
-  const xpath = document.evaluate(
-    `
-      .//*[@ref or @*[starts-with(name(), "@") or contains(name(), ":")]] |
-      .//comment()[starts-with(., "${$el.dataPrefix}")]
-    `,
-    container,
-    null,
-    7,
-    null,
-  )
+  const exp = `
+    .//*[@ref or @*[starts-with(name(), "@") or contains(name(), ":")]] |
+    .//comment()[starts-with(., "${$el.dataPrefix}")]
+  `
+  const xpath = document.evaluate(exp, container, null, 7, null)
 
   for (let i = 0; i < xpath.snapshotLength; i++) {
     const el = xpath.snapshotItem(i)
 
     if (el.nodeType === document.COMMENT_NODE) {
       const index = el.data.substring($el.dataPrefix.length)
-
       el.parentNode.replaceChild(values[index], el)
       continue
     }
@@ -1453,7 +1401,6 @@ function $el(strings, ...values) {
 }
 
 $el.dataPrefix = '$el.data:'
-
 $el.func = (el, type, fn) => {
   if (type) {
     el.addEventListener(type, fn, false)
@@ -1466,55 +1413,31 @@ $el.func = (el, type, fn) => {
   }
 }
 
-function closest(target, selector) {
-  while (target && target instanceof Element) {
-    if (target.matches(selector)) {
-      return target
-    }
-
-    target = target.parentNode
-  }
-
-  return null
-}
-
 function xhr(details) {
   const opt = { ...details }
   const { data } = opt
-
-  if (!opt.method) {
-    opt.method = data ? 'POST' : 'GET'
-  }
+  opt.method ||= data ? 'POST' : 'GET'
 
   if (data instanceof Object) {
-    const arr = []
-    const enc = encodeURIComponent
-
-    for (const key in data) {
-      arr.push(`${enc(key)}=${enc(data[key])}`)
-    }
-
-    opt.data = arr.join('&')
-
-    if (!opt.headers) {
-      opt.headers = {}
-    }
-
+    opt.headers ||= {}
     opt.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8'
+    opt.data = Object.entries(data)
+      .map(kv => kv.map(encodeURIComponent).join('='))
+      .join('&')
   }
 
   setTimeout(() => GM_xmlhttpRequest(opt), 0)
 }
 
 function registerMenuCommands() {
-  menuCommand(`${__`Setting`}...`, togglePrefPanel)
-  menuCommand(`${__`Language`}...`, () => {
+  MenuCommand.register(`${__`Setting`}...`, togglePrefPanel)
+  MenuCommand.register(`${__`Language`}...`, () => {
     const { langField, select } = $el(`
-        <fieldset ref="langField">
-          <legend>${__`Language`}</legend>
-          <select ref="select"></select>
-        </fieldset>
-      `)
+      <fieldset ref="langField">
+        <legend>${__`Language`}</legend>
+        <select ref="select"></select>
+      </fieldset>
+    `)
 
     __.languages.forEach(lang => {
       const option = $el(`<option value="${lang}">${lang}</option>`).first
@@ -1527,24 +1450,20 @@ function registerMenuCommands() {
     })
 
     const panel = new Panel()
-
     panel.appendContent(langField)
     panel.on('apply', () => pref.set('language', select.value))
     panel.open()
   })
 
-  menuCommand(`${__`Import Configuration`}...`, () => pref.importFromFile())
-  menuCommand(__`Export Configuration`, () => pref.exportToFile())
+  MenuCommand.register(`${__`Import Configuration`}...`, ::pref.importFromFile)
+  MenuCommand.register(__`Export Configuration`, ::pref.exportToFile)
 }
 
 function sendJSON(details) {
   const opt = { ...details }
   const { data } = opt
 
-  if (!opt.headers) {
-    opt.headers = {}
-  }
-
+  opt.headers ||= {}
   opt.method = 'POST'
   opt.headers['Content-Type'] = 'application/json; charset=utf-8'
   opt.data = JSON.stringify(data)
@@ -1554,8 +1473,7 @@ function sendJSON(details) {
 
 function evalInContent(code) {
   const script = document.createElement('script')
-
-  script.textContent = code
+  script.textContent = typeof code === 'function' ? `(${code})()` : code
   document.documentElement.appendChild(script)
   document.adoptNode(script)
 }
@@ -1581,7 +1499,6 @@ function onNGSettingCommand({ target }) {
 
 function addSettingsMenuItem() {
   const feedlyTabs = document.getElementById('feedlyTabs')
-
   if (!feedlyTabs) {
     setTimeout(addSettingsMenuItem, 100)
     return
@@ -1597,15 +1514,13 @@ function addSettingsMenuItem() {
     }
 
     const { tab, label } = $el`
-        <div class="tab" contextmenu="${
-          MenuCommand.contextmenu.parentNode.id
-        }" @click="${onNGSettingCommand}" ref="tab">
-          <div class="header target">
-            <img class="icon" src="${GM_info.script.icon}">
-            <div class="label primary" id="feedly-ng-filter-setting" ref="label"></div>
-          </div>
+      <div class="tab" contextmenu="${MenuCommand.contextmenu.parentNode.id}" @click="${onNGSettingCommand}" ref="tab">
+        <div class="header target">
+          <img class="icon" src="${GM_info.script.icon}">
+          <div class="label primary" id="feedly-ng-filter-setting" ref="label"></div>
         </div>
-      `
+      </div>
+    `
 
     label.textContent = __`NG Setting`
 
@@ -1626,20 +1541,15 @@ function addSettingsMenuItem() {
   })
 }
 
-function menuCommand(label, fn) {
-  return new MenuCommand(label, fn)
-}
-
-function openFilePicker(multiple) {
+async function openFilePicker(multiple) {
   return new Promise(resolve => {
-    const { input } = $el`<input type="file" @change="${() => resolve(Array.from(input.files))}" ref="input">`
-
+    const input = $el`<input type="file" @change="${() => input.files |> Array.from |> resolve}">`.first
     input.multiple = multiple
     input.click()
   })
 }
 
-function notify(body, options) {
+async function notify(body, options) {
   options = { body, ...notificationDefaults, ...options }
 
   return new Promise((resolve, reject) => {
@@ -1652,7 +1562,7 @@ function notify(body, options) {
       const n = new Notification(options.title, options)
 
       if (options.autoClose) {
-        setTimeout(() => n.close(), options.autoClose)
+        setTimeout(::n.close, options.autoClose)
       }
 
       resolve(n)
