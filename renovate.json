@@ -5,11 +5,7 @@
     ":prNotPending",
     ":automergeMinor",
     ":automergeBranchMergeCommit",
-    ":automergeRequireAllStatusChecks",
-    ":automergeBranchMergeCommit",
-    ":automergeBranchMergeCommit",
-    ":automergeBranchMergeCommit",
-    ":automergeBranchMergeCommit",
+    ":automergeRequireAllStatusChecks"
   ],
   "lockFileMaintenance": {
     "enabled": true
