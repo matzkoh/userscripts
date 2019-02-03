@@ -1,5 +1,7 @@
 # userscripts
 
+[![Renovate](https://badges.renovateapi.com/github/matzkoh/userscripts)](https://renovatebot.com/)
+
 [Tampermonkey](https://tampermonkey.net/) scripts.
 
 Also in [Greasy Fork](https://greasyfork.org/ja/users/10239-matzkoh).
