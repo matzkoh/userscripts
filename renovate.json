@@ -8,6 +8,8 @@
     ":automergeRequireAllStatusChecks"
   ],
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "automerge": true,
+    "schedule": "at any time"
   }
 }
