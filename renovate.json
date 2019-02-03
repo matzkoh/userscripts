@@ -1,6 +1,7 @@
 {
   "extends": [
     "config:base",
+    ":rebaseStalePrs",
     ":unpublishSafe",
     ":prNotPending",
     ":automergeMinor",
