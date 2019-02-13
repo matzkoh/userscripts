@@ -5,8 +5,8 @@
 // @description    ルールにマッチするアイテムを既読にして取り除きます。ルールは正規表現で記述でき、複数のルールをツリー状に組み合わせることができます。
 // @author         matzkoh
 // @include        https://feedly.com/*
-// @icon           https://greasyfork.org/system/screenshots/screenshots/000/000/615/original/icon.png
-// @screenshot     https://greasyfork.org/system/screenshots/screenshots/000/000/614/original/large.png
+// @icon           https://raw.githubusercontent.com/matzkoh/userscripts/master/packages/feedly-ng-filter/images/icon.png
+// @screenshot     https://raw.githubusercontent.com/matzkoh/userscripts/master/packages/feedly-ng-filter/images/screenshot.png
 // @run-at         document-start
 // @grant          GM_getValue
 // @grant          GM_setValue
