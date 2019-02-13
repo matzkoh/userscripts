@@ -31,5 +31,8 @@
     "feedly-ng-filter": "file:packages/feedly-ng-filter",
     "fix-meta": "file:packages/fix-meta",
     "niconizer-tweetdeck": "file:packages/niconizer-tweetdeck"
+  },
+  "scripts": {
+    "test": "lerna run build"
   }
 }
