@@ -471,10 +471,10 @@
       }
 
       write() {
-        var _this$dict, _ref
+        var _ref, _this$dict
 
         this.dict.__version__ = GM_info.script.version
-        ;(_ref = ((_this$dict = this.dict), Serializer.stringify.bind(Serializer)(_this$dict))),
+        ;(_ref = ((_this$dict = this.dict), Serializer.stringify.call(Serializer, _this$dict))),
           GM_setValue(Preference.prefName, _ref)
       }
 
@@ -1576,7 +1576,7 @@
     async function openFilePicker(multiple) {
       return new Promise(resolve => {
         const input = $el`<input type="file" @change="${() => {
-          var _input$files, _ref3
+          var _ref3, _input$files
 
           return (_ref3 = ((_input$files = input.files), Array.from(_input$files))), resolve(_ref3)
         }}">`.first
