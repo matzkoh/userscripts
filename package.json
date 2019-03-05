@@ -26,11 +26,7 @@
     "stylelint-config-strict-scss": "0.5.0"
   },
   "dependencies": {
-    "add-circleci-workflows-link": "file:packages/add-circleci-workflows-link",
-    "esa-on-google": "file:packages/esa-on-google",
-    "feedly-ng-filter": "file:packages/feedly-ng-filter",
-    "fix-meta": "file:packages/fix-meta",
-    "niconizer-tweetdeck": "file:packages/niconizer-tweetdeck"
+    "fix-meta": "file:packages/fix-meta"
   },
   "scripts": {
     "test": "lerna run build"

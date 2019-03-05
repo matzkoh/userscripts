@@ -14,7 +14,7 @@
     "build": "parcel build src/index.js -o index.user.js --no-autoinstall --no-minify --no-content-hash --no-source-maps --experimental-scope-hoisting",
     "clean": "rimraf dist",
     "lint": "eslint . --ignore-path ../../.eslintignore",
-    "postbuild": "fix-meta dist/**/*.user.js && prettier --write dist/**/*.user.js",
+    "postbuild": "fix-meta \"dist/**/*.user.js\" && prettier --write \"dist/**/*.user.js\"",
     "prebuild": "run-s lint clean",
     "watch": "parcel watch src/index.js -o index.user.js"
   }
