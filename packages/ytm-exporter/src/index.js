@@ -14,12 +14,13 @@
 
 import dayjs from 'dayjs'
 
-GM_registerMenuCommand('エクスポート', async () => {
-  const headers = ['id', 'status', 'name', 'vendorName', 'createdAt', 'modifiedAt', 'tag', 'catalog']
+const tagCsvHeaders = ['id', 'status', 'name', 'vendorName', 'createdAt', 'modifiedAt', 'tag', 'catalog']
+
+GM_registerMenuCommand('タグをエクスポート', async () => {
   const urls = Array.from($('.row-selected .tag-detail-link')).map(a => new URL('attributes', a.href))
   const totalCount = urls.length
   if (!totalCount) {
-    AlertModal.open()
+    AlertModal.open({ message: 'エクスポートするタグを選択してください' })
     return
   }
 
@@ -27,19 +28,13 @@ GM_registerMenuCommand('エクスポート', async () => {
   unsafeWindow.__modal = modal
   const rows = await Promise.all(
     urls.map(async url => {
-      const { tag } = await $.get(url)
-      const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
-      if (tag.defaultTagCategoryName === 'Functional') {
-        tag.tag = fields.markup
-      } else {
-        tag.catalog = JSON.stringify(fields)
-      }
+      const res = await $.get(url)
       modal.increment()
-      return headers.map(k => tag[k])
+      return tagDetailToRow(res)
     }),
   )
 
-  rows.unshift(headers)
+  rows.unshift(tagCsvHeaders)
   console.log(rows)
 
   const date = dayjs().format('YYYYMMDD')
@@ -52,6 +47,16 @@ GM_registerMenuCommand('エクスポート', async () => {
 
   saveBlob(blob, fileName)
 })
+
+async function tagDetailToRow({ tag }) {
+  const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
+  if (tag.defaultTagCategoryName === 'Functional') {
+    tag.tag = fields.markup
+  } else {
+    tag.catalog = JSON.stringify(fields)
+  }
+  return tagCsvHeaders.map(k => tag[k])
+}
 
 function saveBlob(blob, fileName) {
   const url = URL.createObjectURL(blob)
