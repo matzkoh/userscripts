@@ -26,6 +26,10 @@
     "stylelint-config-recess-order": "2.0.1",
     "stylelint-config-strict-scss": "0.5.0"
   },
+  "engines": {
+    "node": ">= 10",
+    "npm": ">= 6.4"
+  },
   "private": true,
   "scripts": {
     "install": "lerna bootstrap",
