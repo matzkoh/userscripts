@@ -1,5 +1,6 @@
 {
   "name": "ytm-exporter",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "7.4.0"
   },
@@ -7,7 +8,6 @@
     "node": ">= 10",
     "npm": ">= 6.4"
   },
-  "license": "MIT",
   "main": "dist/index.user.js",
   "private": true,
   "scripts": {

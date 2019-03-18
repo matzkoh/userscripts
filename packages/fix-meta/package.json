@@ -1,13 +1,13 @@
 {
   "name": "fix-meta",
   "version": "1.0.0",
+  "license": "MIT",
   "bin": {
     "fix-meta": "index.js"
   },
   "files": [
     "index.js"
   ],
-  "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
