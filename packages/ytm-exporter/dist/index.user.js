@@ -36,21 +36,22 @@
       i = 'day',
       s = 'week',
       u = 'month',
-      a = 'year',
-      o = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/,
-      h = /\[.*?\]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
-      f = function(t, n, e) {
+      a = 'quarter',
+      o = 'year',
+      h = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/,
+      f = /\[.*?\]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
+      c = function(t, n, e) {
         var r = String(t)
         return !r || r.length >= n ? t : '' + Array(n + 1 - r.length).join(e) + t
       },
-      c = {
-        s: f,
+      d = {
+        s: c,
         z: function(t) {
           var n = -t.utcOffset(),
             e = Math.abs(n),
             r = Math.floor(e / 60),
             i = e % 60
-          return (n <= 0 ? '+' : '-') + f(r, 2, '0') + ':' + f(i, 2, '0')
+          return (n <= 0 ? '+' : '-') + c(r, 2, '0') + ':' + c(i, 2, '0')
         },
         m: function(t, n) {
           var e = 12 * (n.year() - t.year()) + (n.month() - t.month()),
@@ -62,19 +63,20 @@
         a: function(t) {
           return t < 0 ? Math.ceil(t) || 0 : Math.floor(t)
         },
-        p: function(o) {
+        p: function(h) {
           return (
             {
               M: u,
-              y: a,
+              y: o,
               w: s,
               d: i,
               h: r,
               m: e,
               s: n,
               ms: t,
-            }[o] ||
-            String(o || '')
+              Q: a,
+            }[h] ||
+            String(h || '')
               .toLowerCase()
               .replace(/s$/, '')
           )
@@ -83,31 +85,31 @@
           return void 0 === t
         },
       },
-      d = {
+      $ = {
         name: 'en',
         weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
         months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
       },
-      $ = 'en',
-      l = {}
+      l = 'en',
+      m = {}
 
-    l[$] = d
+    m[l] = $
 
-    var m = function(t) {
-        return t instanceof D
-      },
-      y = function(t, n, e) {
-        var r
-        if (!t) return null
-        if ('string' == typeof t) l[t] && (r = t), n && ((l[t] = n), (r = t))
-        else {
-          var i = t.name
-          ;(l[i] = t), (r = i)
-        }
-        return e || ($ = r), r
+    var y = function(t) {
+        return t instanceof S
       },
       M = function(t, n, e) {
-        if (m(t)) return t.clone()
+        var r
+        if (!t) return null
+        if ('string' == typeof t) m[t] && (r = t), n && ((m[t] = n), (r = t))
+        else {
+          var i = t.name
+          ;(m[i] = t), (r = i)
+        }
+        return e || (l = r), r
+      },
+      g = function(t, n, e) {
+        if (y(t)) return t.clone()
         var r = n
           ? 'string' == typeof n
             ? {
@@ -116,36 +118,36 @@
               }
             : n
           : {}
-        return (r.date = t), new D(r)
+        return (r.date = t), new S(r)
       },
-      g = c
+      D = d
 
-    ;(g.l = y),
-      (g.i = m),
-      (g.w = function(t, n) {
-        return M(t, {
+    ;(D.l = M),
+      (D.i = y),
+      (D.w = function(t, n) {
+        return g(t, {
           locale: n.$L,
           utc: n.$u,
         })
       })
 
-    var D = (function() {
-      function f(t) {
-        ;(this.$L = this.$L || y(t.locale, null, !0) || $), this.parse(t)
+    var S = (function() {
+      function c(t) {
+        ;(this.$L = this.$L || M(t.locale, null, !0) || l), this.parse(t)
       }
 
-      var c = f.prototype
+      var d = c.prototype
       return (
-        (c.parse = function(t) {
+        (d.parse = function(t) {
           ;(this.$d = (function(t) {
             var n = t.date,
               e = t.utc
             if (null === n) return new Date(NaN)
-            if (g.u(n)) return new Date()
+            if (D.u(n)) return new Date()
             if (n instanceof Date) return new Date(n)
 
             if ('string' == typeof n && !/Z$/i.test(n)) {
-              var r = n.match(o)
+              var r = n.match(h)
               if (r)
                 return e
                   ? new Date(Date.UTC(r[1], r[2] - 1, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, r[7] || 0))
@@ -156,7 +158,7 @@
           })(t)),
             this.init()
         }),
-        (c.init = function() {
+        (d.init = function() {
           var t = this.$d
           ;(this.$y = t.getFullYear()),
             (this.$M = t.getMonth()),
@@ -167,65 +169,65 @@
             (this.$s = t.getSeconds()),
             (this.$ms = t.getMilliseconds())
         }),
-        (c.$utils = function() {
-          return g
+        (d.$utils = function() {
+          return D
         }),
-        (c.isValid = function() {
+        (d.isValid = function() {
           return !('Invalid Date' === this.$d.toString())
         }),
-        (c.isSame = function(t, n) {
-          var e = M(t)
+        (d.isSame = function(t, n) {
+          var e = g(t)
           return this.startOf(n) <= e && e <= this.endOf(n)
         }),
-        (c.isAfter = function(t, n) {
-          return M(t) < this.startOf(n)
+        (d.isAfter = function(t, n) {
+          return g(t) < this.startOf(n)
         }),
-        (c.isBefore = function(t, n) {
-          return this.endOf(n) < M(t)
+        (d.isBefore = function(t, n) {
+          return this.endOf(n) < g(t)
         }),
-        (c.$g = function(t, n, e) {
-          return g.u(t) ? this[n] : this.set(e, t)
+        (d.$g = function(t, n, e) {
+          return D.u(t) ? this[n] : this.set(e, t)
         }),
-        (c.year = function(t) {
-          return this.$g(t, '$y', a)
+        (d.year = function(t) {
+          return this.$g(t, '$y', o)
         }),
-        (c.month = function(t) {
+        (d.month = function(t) {
           return this.$g(t, '$M', u)
         }),
-        (c.day = function(t) {
+        (d.day = function(t) {
           return this.$g(t, '$W', i)
         }),
-        (c.date = function(t) {
+        (d.date = function(t) {
           return this.$g(t, '$D', 'date')
         }),
-        (c.hour = function(t) {
+        (d.hour = function(t) {
           return this.$g(t, '$H', r)
         }),
-        (c.minute = function(t) {
+        (d.minute = function(t) {
           return this.$g(t, '$m', e)
         }),
-        (c.second = function(t) {
+        (d.second = function(t) {
           return this.$g(t, '$s', n)
         }),
-        (c.millisecond = function(n) {
+        (d.millisecond = function(n) {
           return this.$g(n, '$ms', t)
         }),
-        (c.unix = function() {
+        (d.unix = function() {
           return Math.floor(this.valueOf() / 1e3)
         }),
-        (c.valueOf = function() {
+        (d.valueOf = function() {
           return this.$d.getTime()
         }),
-        (c.startOf = function(t, o) {
+        (d.startOf = function(t, a) {
           var h = this,
-            f = !!g.u(o) || o,
-            c = g.p(t),
+            f = !!D.u(a) || a,
+            c = D.p(t),
             d = function(t, n) {
-              var e = g.w(h.$u ? Date.UTC(h.$y, n, t) : new Date(h.$y, n, t), h)
+              var e = D.w(h.$u ? Date.UTC(h.$y, n, t) : new Date(h.$y, n, t), h)
               return f ? e : e.endOf(i)
             },
             $ = function(t, n) {
-              return g.w(h.toDate()[t].apply(h.toDate(), (f ? [0, 0, 0, 0] : [23, 59, 59, 999]).slice(n)), h)
+              return D.w(h.toDate()[t].apply(h.toDate(), (f ? [0, 0, 0, 0] : [23, 59, 59, 999]).slice(n)), h)
             },
             l = this.$W,
             m = this.$M,
@@ -233,15 +235,15 @@
             M = 'set' + (this.$u ? 'UTC' : '')
 
           switch (c) {
-            case a:
+            case o:
               return f ? d(1, 0) : d(31, 11)
 
             case u:
               return f ? d(1, m) : d(0, m + 1)
 
             case s:
-              var D = this.$locale().weekStart || 0,
-                S = (l < D ? l + 7 : l) - D
+              var g = this.$locale().weekStart || 0,
+                S = (l < g ? l + 7 : l) - g
               return d(f ? y - S : y + (6 - S), m)
 
             case i:
@@ -261,35 +263,35 @@
               return this.clone()
           }
         }),
-        (c.endOf = function(t) {
+        (d.endOf = function(t) {
           return this.startOf(t, !1)
         }),
-        (c.$set = function(s, o) {
+        (d.$set = function(s, a) {
           var h,
-            f = g.p(s),
+            f = D.p(s),
             c = 'set' + (this.$u ? 'UTC' : ''),
             d = ((h = {}),
             (h[i] = c + 'Date'),
             (h.date = c + 'Date'),
             (h[u] = c + 'Month'),
-            (h[a] = c + 'FullYear'),
+            (h[o] = c + 'FullYear'),
             (h[r] = c + 'Hours'),
             (h[e] = c + 'Minutes'),
             (h[n] = c + 'Seconds'),
             (h[t] = c + 'Milliseconds'),
             h)[f],
-            $ = f === i ? this.$D + (o - this.$W) : o
+            $ = f === i ? this.$D + (a - this.$W) : a
           return this.$d[d] && this.$d[d]($), this.init(), this
         }),
-        (c.set = function(t, n) {
+        (d.set = function(t, n) {
           return this.clone().$set(t, n)
         }),
-        (c.add = function(t, o) {
+        (d.add = function(t, a) {
           var h,
             f = this
           t = Number(t)
 
-          var c = g.p(o),
+          var c = D.p(a),
             d = function(n, e) {
               var r = f
                 .clone()
@@ -299,26 +301,26 @@
             },
             $ = function(n) {
               var e = new Date(f.$d)
-              return e.setDate(e.getDate() + n * t), g.w(e, f)
+              return e.setDate(e.getDate() + n * t), D.w(e, f)
             }
 
           if (c === u) return d(u, this.$M)
-          if (c === a) return d(a, this.$y)
+          if (c === o) return d(o, this.$y)
           if (c === i) return $(1)
           if (c === s) return $(7)
           var l = ((h = {}), (h[e] = 6e4), (h[r] = 36e5), (h[n] = 1e3), h)[c] || 1,
             m = this.valueOf() + t * l
-          return g.w(m, this)
+          return D.w(m, this)
         }),
-        (c.subtract = function(t, n) {
+        (d.subtract = function(t, n) {
           return this.add(-1 * t, n)
         }),
-        (c.format = function(t) {
+        (d.format = function(t) {
           var n = this
           if (!this.isValid()) return 'Invalid Date'
 
           var e = t || 'YYYY-MM-DDTHH:mm:ssZ',
-            r = g.z(this),
+            r = D.z(this),
             i = this.$locale(),
             s = i.weekdays,
             u = i.months,
@@ -326,107 +328,107 @@
               return (t && t[n]) || e[n].substr(0, r)
             },
             o = function(t) {
-              return g.s(n.$H % 12 || 12, t, '0')
+              return D.s(n.$H % 12 || 12, t, '0')
             },
-            f = {
+            h = {
               YY: String(this.$y).slice(-2),
               YYYY: String(this.$y),
               M: String(this.$M + 1),
-              MM: g.s(this.$M + 1, 2, '0'),
+              MM: D.s(this.$M + 1, 2, '0'),
               MMM: a(i.monthsShort, this.$M, u, 3),
               MMMM: u[this.$M],
               D: String(this.$D),
-              DD: g.s(this.$D, 2, '0'),
+              DD: D.s(this.$D, 2, '0'),
               d: String(this.$W),
               dd: a(i.weekdaysMin, this.$W, s, 2),
               ddd: a(i.weekdaysShort, this.$W, s, 3),
               dddd: s[this.$W],
               H: String(this.$H),
-              HH: g.s(this.$H, 2, '0'),
+              HH: D.s(this.$H, 2, '0'),
               h: o(1),
               hh: o(2),
               a: this.$H < 12 ? 'am' : 'pm',
               A: this.$H < 12 ? 'AM' : 'PM',
               m: String(this.$m),
-              mm: g.s(this.$m, 2, '0'),
+              mm: D.s(this.$m, 2, '0'),
               s: String(this.$s),
-              ss: g.s(this.$s, 2, '0'),
-              SSS: g.s(this.$ms, 3, '0'),
+              ss: D.s(this.$s, 2, '0'),
+              SSS: D.s(this.$ms, 3, '0'),
               Z: r,
             }
 
-          return e.replace(h, function(t) {
-            return t.indexOf('[') > -1 ? t.replace(/\[|\]/g, '') : f[t] || r.replace(':', '')
+          return e.replace(f, function(t) {
+            return t.indexOf('[') > -1 ? t.replace(/\[|\]/g, '') : h[t] || r.replace(':', '')
           })
         }),
-        (c.utcOffset = function() {
+        (d.utcOffset = function() {
           return 15 * -Math.round(this.$d.getTimezoneOffset() / 15)
         }),
-        (c.diff = function(t, o, h) {
-          var f,
-            c = g.p(o),
-            d = M(t),
-            $ = 6e4 * (d.utcOffset() - this.utcOffset()),
-            l = this - d,
-            m = g.m(this, d)
+        (d.diff = function(t, h, f) {
+          var c,
+            d = D.p(h),
+            $ = g(t),
+            l = 6e4 * ($.utcOffset() - this.utcOffset()),
+            m = this - $,
+            y = D.m(this, $)
           return (
-            (m =
-              ((f = {}),
-              (f[a] = m / 12),
-              (f[u] = m),
-              (f.quarter = m / 3),
-              (f[s] = (l - $) / 6048e5),
-              (f[i] = (l - $) / 864e5),
-              (f[r] = l / 36e5),
-              (f[e] = l / 6e4),
-              (f[n] = l / 1e3),
-              f)[c] || l),
-            h ? m : g.a(m)
+            (y =
+              ((c = {}),
+              (c[o] = y / 12),
+              (c[u] = y),
+              (c[a] = y / 3),
+              (c[s] = (m - l) / 6048e5),
+              (c[i] = (m - l) / 864e5),
+              (c[r] = m / 36e5),
+              (c[e] = m / 6e4),
+              (c[n] = m / 1e3),
+              c)[d] || m),
+            f ? y : D.a(y)
           )
         }),
-        (c.daysInMonth = function() {
+        (d.daysInMonth = function() {
           return this.endOf(u).$D
         }),
-        (c.$locale = function() {
-          return l[this.$L]
+        (d.$locale = function() {
+          return m[this.$L]
         }),
-        (c.locale = function(t, n) {
+        (d.locale = function(t, n) {
           if (!t) return this.$L
           var e = this.clone()
-          return (e.$L = y(t, n, !0)), e
+          return (e.$L = M(t, n, !0)), e
         }),
-        (c.clone = function() {
-          return g.w(this.toDate(), this)
+        (d.clone = function() {
+          return D.w(this.toDate(), this)
         }),
-        (c.toDate = function() {
+        (d.toDate = function() {
           return new Date(this.$d)
         }),
-        (c.toJSON = function() {
+        (d.toJSON = function() {
           return this.toISOString()
         }),
-        (c.toISOString = function() {
+        (d.toISOString = function() {
           return this.$d.toISOString()
         }),
-        (c.toString = function() {
+        (d.toString = function() {
           return this.$d.toUTCString()
         }),
-        f
+        c
       )
     })()
 
     return (
-      (M.prototype = D.prototype),
-      (M.extend = function(t, n) {
-        return t(n, D, M), M
+      (g.prototype = S.prototype),
+      (g.extend = function(t, n) {
+        return t(n, S, g), g
       }),
-      (M.locale = y),
-      (M.isDayjs = m),
-      (M.unix = function(t) {
-        return M(1e3 * t)
+      (g.locale = M),
+      (g.isDayjs = y),
+      (g.unix = function(t) {
+        return g(1e3 * t)
       }),
-      (M.en = l[$]),
-      (M.Ls = l),
-      M
+      (g.en = m[l]),
+      (g.Ls = m),
+      g
     )
   })
   {
