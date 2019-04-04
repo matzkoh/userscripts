@@ -5,6 +5,7 @@
 // @description  Export to excel for YTM console
 // @author       matzkoh
 // @include      https://control.theyjtag.jp/sites/*/tags
+// @include      https://control.theyjtag.jp/sites/*/pages/*/tag-assignments
 // @grant        GM_registerMenuCommand
 // ==/UserScript==
 
