@@ -2,7 +2,7 @@
   // ==UserScript==
   // @name         YTM Exporter
   // @namespace    https://github.com/matzkoh
-  // @version      1.0.0
+  // @version      1.0.1
   // @description  Export to excel for YTM console
   // @author       matzkoh
   // @include      https://control.theyjtag.jp/sites/*/tags
@@ -105,6 +105,7 @@ class Modal {
       zIndex: '2147483647',
     })
     const body = wrapper.find('.ytm-ex-modal-body').css({
+      padding: '10vw',
       background: '#fffc',
     })
 
@@ -141,7 +142,9 @@ class Modal {
 class AlertModal extends Modal {
   constructor(options) {
     super({ ...options, closeOnClick: true })
-    this.body.text(this.options.message)
+    this.body.text(this.options.message).css({
+      fontSize: '2vw',
+    })
   }
 }
 
@@ -167,7 +170,6 @@ class ProgressModal extends Modal {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '10vw',
       })
       .append(this.text)
       .append(this.progress)
