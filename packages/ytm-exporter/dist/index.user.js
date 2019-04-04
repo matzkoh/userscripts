@@ -32,33 +32,33 @@
     var t = 'millisecond',
       n = 'second',
       e = 'minute',
-      r = 'hour',
-      i = 'day',
+      i = 'hour',
+      r = 'day',
       s = 'week',
       u = 'month',
       a = 'quarter',
       o = 'year',
       h = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/,
-      f = /\[.*?\]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
+      f = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
       c = function(t, n, e) {
-        var r = String(t)
-        return !r || r.length >= n ? t : '' + Array(n + 1 - r.length).join(e) + t
+        var i = String(t)
+        return !i || i.length >= n ? t : '' + Array(n + 1 - i.length).join(e) + t
       },
       d = {
         s: c,
         z: function(t) {
           var n = -t.utcOffset(),
             e = Math.abs(n),
-            r = Math.floor(e / 60),
-            i = e % 60
-          return (n <= 0 ? '+' : '-') + c(r, 2, '0') + ':' + c(i, 2, '0')
+            i = Math.floor(e / 60),
+            r = e % 60
+          return (n <= 0 ? '+' : '-') + c(i, 2, '0') + ':' + c(r, 2, '0')
         },
         m: function(t, n) {
           var e = 12 * (n.year() - t.year()) + (n.month() - t.month()),
-            r = t.clone().add(e, u),
-            i = n - r < 0,
-            s = t.clone().add(e + (i ? -1 : 1), u)
-          return Number(-(e + (n - r) / (i ? r - s : s - r)) || 0)
+            i = t.clone().add(e, u),
+            r = n - i < 0,
+            s = t.clone().add(e + (r ? -1 : 1), u)
+          return Number(-(e + (n - i) / (r ? i - s : s - i)) || 0)
         },
         a: function(t) {
           return t < 0 ? Math.ceil(t) || 0 : Math.floor(t)
@@ -69,8 +69,8 @@
               M: u,
               y: o,
               w: s,
-              d: i,
-              h: r,
+              d: r,
+              h: i,
               m: e,
               s: n,
               ms: t,
@@ -99,18 +99,18 @@
         return t instanceof S
       },
       M = function(t, n, e) {
-        var r
+        var i
         if (!t) return null
-        if ('string' == typeof t) m[t] && (r = t), n && ((m[t] = n), (r = t))
+        if ('string' == typeof t) m[t] && (i = t), n && ((m[t] = n), (i = t))
         else {
-          var i = t.name
-          ;(m[i] = t), (r = i)
+          var r = t.name
+          ;(m[r] = t), (i = r)
         }
-        return e || (l = r), r
+        return e || (l = i), i
       },
       g = function(t, n, e) {
         if (y(t)) return t.clone()
-        var r = n
+        var i = n
           ? 'string' == typeof n
             ? {
                 format: n,
@@ -118,7 +118,7 @@
               }
             : n
           : {}
-        return (r.date = t), new S(r)
+        return (i.date = t), new S(i)
       },
       D = d
 
@@ -147,11 +147,11 @@
             if (n instanceof Date) return new Date(n)
 
             if ('string' == typeof n && !/Z$/i.test(n)) {
-              var r = n.match(h)
-              if (r)
+              var i = n.match(h)
+              if (i)
                 return e
-                  ? new Date(Date.UTC(r[1], r[2] - 1, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, r[7] || 0))
-                  : new Date(r[1], r[2] - 1, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, r[7] || 0)
+                  ? new Date(Date.UTC(i[1], i[2] - 1, i[3] || 1, i[4] || 0, i[5] || 0, i[6] || 0, i[7] || 0))
+                  : new Date(i[1], i[2] - 1, i[3] || 1, i[4] || 0, i[5] || 0, i[6] || 0, i[7] || 0)
             }
 
             return new Date(n)
@@ -195,13 +195,13 @@
           return this.$g(t, '$M', u)
         }),
         (d.day = function(t) {
-          return this.$g(t, '$W', i)
+          return this.$g(t, '$W', r)
         }),
         (d.date = function(t) {
           return this.$g(t, '$D', 'date')
         }),
         (d.hour = function(t) {
-          return this.$g(t, '$H', r)
+          return this.$g(t, '$H', i)
         }),
         (d.minute = function(t) {
           return this.$g(t, '$m', e)
@@ -224,7 +224,7 @@
             c = D.p(t),
             d = function(t, n) {
               var e = D.w(h.$u ? Date.UTC(h.$y, n, t) : new Date(h.$y, n, t), h)
-              return f ? e : e.endOf(i)
+              return f ? e : e.endOf(r)
             },
             $ = function(t, n) {
               return D.w(h.toDate()[t].apply(h.toDate(), (f ? [0, 0, 0, 0] : [23, 59, 59, 999]).slice(n)), h)
@@ -246,11 +246,11 @@
                 S = (l < g ? l + 7 : l) - g
               return d(f ? y - S : y + (6 - S), m)
 
-            case i:
+            case r:
             case 'date':
               return $(M + 'Hours', 0)
 
-            case r:
+            case i:
               return $(M + 'Minutes', 1)
 
             case e:
@@ -271,20 +271,29 @@
             f = D.p(s),
             c = 'set' + (this.$u ? 'UTC' : ''),
             d = ((h = {}),
-            (h[i] = c + 'Date'),
+            (h[r] = c + 'Date'),
             (h.date = c + 'Date'),
             (h[u] = c + 'Month'),
             (h[o] = c + 'FullYear'),
-            (h[r] = c + 'Hours'),
+            (h[i] = c + 'Hours'),
             (h[e] = c + 'Minutes'),
             (h[n] = c + 'Seconds'),
             (h[t] = c + 'Milliseconds'),
             h)[f],
-            $ = f === i ? this.$D + (a - this.$W) : a
-          return this.$d[d] && this.$d[d]($), this.init(), this
+            $ = f === r ? this.$D + (a - this.$W) : a
+
+          if (f === u || f === o) {
+            var l = this.clone().set('date', 1)
+            l.$d[d]($), l.init(), (this.$d = l.set('date', Math.min(this.$D, l.daysInMonth())).toDate())
+          } else d && this.$d[d]($)
+
+          return this.init(), this
         }),
         (d.set = function(t, n) {
           return this.clone().$set(t, n)
+        }),
+        (d.get = function(t) {
+          return this[D.p(t)]()
         }),
         (d.add = function(t, a) {
           var h,
@@ -292,25 +301,18 @@
           t = Number(t)
 
           var c = D.p(a),
-            d = function(n, e) {
-              var r = f
-                .clone()
-                .set('date', 1)
-                .set(n, e + t)
-              return r.set('date', Math.min(f.$D, r.daysInMonth()))
-            },
-            $ = function(n) {
+            d = function(n) {
               var e = new Date(f.$d)
               return e.setDate(e.getDate() + n * t), D.w(e, f)
             }
 
-          if (c === u) return d(u, this.$M)
-          if (c === o) return d(o, this.$y)
-          if (c === i) return $(1)
-          if (c === s) return $(7)
-          var l = ((h = {}), (h[e] = 6e4), (h[r] = 36e5), (h[n] = 1e3), h)[c] || 1,
-            m = this.valueOf() + t * l
-          return D.w(m, this)
+          if (c === u) return this.set(u, this.$M + t)
+          if (c === o) return this.set(o, this.$y + t)
+          if (c === r) return d(1)
+          if (c === s) return d(7)
+          var $ = ((h = {}), (h[e] = 6e4), (h[i] = 36e5), (h[n] = 1e3), h)[c] || 1,
+            l = this.valueOf() + t * $
+          return D.w(l, this)
         }),
         (d.subtract = function(t, n) {
           return this.add(-1 * t, n)
@@ -320,12 +322,12 @@
           if (!this.isValid()) return 'Invalid Date'
 
           var e = t || 'YYYY-MM-DDTHH:mm:ssZ',
-            r = D.z(this),
-            i = this.$locale(),
-            s = i.weekdays,
-            u = i.months,
-            a = function(t, n, e, r) {
-              return (t && t[n]) || e[n].substr(0, r)
+            i = D.z(this),
+            r = this.$locale(),
+            s = r.weekdays,
+            u = r.months,
+            a = function(t, n, e, i) {
+              return (t && t[n]) || e[n].substr(0, i)
             },
             o = function(t) {
               return D.s(n.$H % 12 || 12, t, '0')
@@ -335,13 +337,13 @@
               YYYY: String(this.$y),
               M: String(this.$M + 1),
               MM: D.s(this.$M + 1, 2, '0'),
-              MMM: a(i.monthsShort, this.$M, u, 3),
+              MMM: a(r.monthsShort, this.$M, u, 3),
               MMMM: u[this.$M],
               D: String(this.$D),
               DD: D.s(this.$D, 2, '0'),
               d: String(this.$W),
-              dd: a(i.weekdaysMin, this.$W, s, 2),
-              ddd: a(i.weekdaysShort, this.$W, s, 3),
+              dd: a(r.weekdaysMin, this.$W, s, 2),
+              ddd: a(r.weekdaysShort, this.$W, s, 3),
               dddd: s[this.$W],
               H: String(this.$H),
               HH: D.s(this.$H, 2, '0'),
@@ -354,11 +356,11 @@
               s: String(this.$s),
               ss: D.s(this.$s, 2, '0'),
               SSS: D.s(this.$ms, 3, '0'),
-              Z: r,
+              Z: i,
             }
 
-          return e.replace(f, function(t) {
-            return t.indexOf('[') > -1 ? t.replace(/\[|\]/g, '') : h[t] || r.replace(':', '')
+          return e.replace(f, function(t, n) {
+            return n || h[t] || i.replace(':', '')
           })
         }),
         (d.utcOffset = function() {
@@ -378,8 +380,8 @@
               (c[u] = y),
               (c[a] = y / 3),
               (c[s] = (m - l) / 6048e5),
-              (c[i] = (m - l) / 864e5),
-              (c[r] = m / 36e5),
+              (c[r] = (m - l) / 864e5),
+              (c[i] = m / 36e5),
               (c[e] = m / 6e4),
               (c[n] = m / 1e3),
               c)[d] || m),
