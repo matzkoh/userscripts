@@ -2,7 +2,7 @@
   // ==UserScript==
   // @name         YTM Exporter
   // @namespace    https://github.com/matzkoh
-  // @version      1.0.1
+  // @version      1.1.0
   // @description  Export to excel for YTM console
   // @author       matzkoh
   // @include      https://control.theyjtag.jp/sites/*/tags
@@ -14,28 +14,57 @@
 /* global $:false */
 
 import dayjs from 'dayjs'
+import 'dayjs/locale/ja'
+import LocalizedFormat from 'dayjs/esm/plugin/localizedFormat'
 
-const tagCsvHeaders = ['id', 'status', 'name', 'vendorName', 'createdAt', 'modifiedAt', 'tag', 'catalog']
+dayjs.locale('ja')
+dayjs.extend(LocalizedFormat)
+
+const tagProps = [
+  'id',
+  'status',
+  'name',
+  'vendorName',
+  'createdAt',
+  'modifiedAt',
+  'tag',
+  'catalog',
+  'conditionalFiring',
+]
+const csvHeaders = [
+  'ID',
+  'ステータス',
+  'タグ名',
+  'サービス提供元',
+  '作成日',
+  '更新日',
+  'カスタムタグ',
+  'カタログタグ',
+  'タグ実行条件',
+  '実行ページ',
+]
 
 GM_registerMenuCommand('タグをエクスポート', async () => {
-  const urls = Array.from($('.row-selected .tag-detail-link')).map(a => new URL('attributes', a.href))
+  const urls = Array.from($('.row-selected .tag-detail-link')).map(a => [
+    new URL('attributes', a.href),
+    new URL('page-assignments', a.href),
+  ])
   const totalCount = urls.length
   if (!totalCount) {
     AlertModal.open({ message: 'エクスポートするタグを選択してください' })
     return
   }
 
-  const modal = ProgressModal.open({ maxValue: totalCount })
-  unsafeWindow.__modal = modal
+  const modal = ProgressModal.open({ maxValue: totalCount * 2 })
   const rows = await Promise.all(
-    urls.map(async url => {
-      const res = await $.get(url)
-      modal.increment()
-      return tagDetailToRow(res)
+    urls.map(async urls => {
+      const [{ tag }, page] = await getAll(urls, () => modal.increment())
+      const urlPatterns = page[0]?.urlPatterns?.includes?.map(item => item.pattern) || []
+      return tagDetailToRow({ tag, urlPatterns })
     }),
   )
 
-  rows.unshift(tagCsvHeaders)
+  rows.unshift(csvHeaders)
   console.log(rows)
 
   const date = dayjs().format('YYYYMMDD')
@@ -49,14 +78,29 @@ GM_registerMenuCommand('タグをエクスポート', async () => {
   saveBlob(blob, fileName)
 })
 
-async function tagDetailToRow({ tag }) {
+async function getAll(urls, progress) {
+  return Promise.all(
+    urls.map(async url => {
+      const res = await $.get(url)
+      progress()
+      return res
+    }),
+  )
+}
+
+async function tagDetailToRow({ tag, urlPatterns }) {
+  tag.status = { ACTIVE: '有効', INACTIVE: '無効' }[tag.status] || tag.status
+  tag.createdAt = dayjs(tag.createdAt).format('llll')
+  tag.modifiedAt = dayjs(tag.modifiedAt).format('llll')
+
   const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
   if (tag.defaultTagCategoryName === 'Functional') {
     tag.tag = fields.markup
   } else {
     tag.catalog = JSON.stringify(fields)
   }
-  return tagCsvHeaders.map(k => tag[k])
+  const pageUrl = urlPatterns.join('\n')
+  return [...tagProps.map(k => tag[k]), pageUrl]
 }
 
 function saveBlob(blob, fileName) {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YTM Exporter
 // @namespace    https://github.com/matzkoh
-// @version      1.0.1
+// @version      1.1.0
 // @description  Export to excel for YTM console
 // @author       matzkoh
 // @include      https://control.theyjtag.jp/sites/*/tags
@@ -434,14 +434,124 @@
       g
     )
   })
+  // ASSET: ../../../node_modules/dayjs/locale/ja.js
+  var $tgU2$exports = {}
+  var $tgU2$var$define
+  !(function(e, _) {
+    'object' == typeof $tgU2$exports && 'undefined' != 'object'
+      ? ($tgU2$exports = _($XZPv$exports))
+      : 'function' == typeof $tgU2$var$define && $tgU2$var$define.amd
+      ? $tgU2$var$define(['dayjs'], _)
+      : (e.dayjs_locale_ja = _(e.dayjs))
+  })($tgU2$exports, function(e) {
+    e = e && e.hasOwnProperty('default') ? e.default : e
+    var _ = {
+      name: 'ja',
+      weekdays: '日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日'.split('_'),
+      weekdaysShort: '日_月_火_水_木_金_土'.split('_'),
+      weekdaysMin: '日_月_火_水_木_金_土'.split('_'),
+      months: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+      ordinal: function(e) {
+        return e + '日'
+      },
+      formats: {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L: 'YYYY/MM/DD',
+        LL: 'YYYY年M月D日',
+        LLL: 'YYYY年M月D日 HH:mm',
+        LLLL: 'YYYY年M月D日 dddd HH:mm',
+        l: 'YYYY/MM/DD',
+        ll: 'YYYY年M月D日',
+        lll: 'YYYY年M月D日 HH:mm',
+        llll: 'YYYY年M月D日(ddd) HH:mm',
+      },
+      relativeTime: {
+        future: '%s後',
+        past: '%s前',
+        s: '数秒',
+        m: '1分',
+        mm: '%d分',
+        h: '1時間',
+        hh: '%d時間',
+        d: '1日',
+        dd: '%d日',
+        M: '1ヶ月',
+        MM: '%dヶ月',
+        y: '1年',
+        yy: '%d年',
+      },
+    }
+    return e.locale(_, null, !0), _
+  })
+  var $rsYp$export$FORMAT_DEFAULT = 'YYYY-MM-DDTHH:mm:ssZ'
+  var $rsYp$export$REGEX_PARSE = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/
+  var $rsYp$export$REGEX_FORMAT = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g
+
+  var $kx9$export$default = function(o, c, d) {
+    var proto = c.prototype
+    var oldFormat = proto.format
+    var englishFormats = {
+      LTS: 'h:mm:ss A',
+      LT: 'h:mm A',
+      L: 'MM/DD/YYYY',
+      LL: 'MMMM D, YYYY',
+      LLL: 'MMMM D, YYYY h:mm A',
+      LLLL: 'dddd, MMMM D, YYYY h:mm A',
+      l: 'M/D/YYYY',
+      ll: 'MMM D, YYYY',
+      lll: 'MMM D, YYYY h:mm A',
+      llll: 'ddd, MMM D, YYYY h:mm A',
+    }
+    d.en.formats = englishFormats
+
+    proto.format = function(formatStr) {
+      var locale = this.$locale()
+      var formats = locale.formats || {}
+      var str = formatStr || $rsYp$export$FORMAT_DEFAULT
+      var result = str.replace(/(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g, function(_, a, b) {
+        return a || formats[b] || englishFormats[b]
+      })
+      return oldFormat.call(this, result)
+    }
+  }
+
   {
   }
 
   /* global $:false */
 
-  const $Focm$var$tagCsvHeaders = ['id', 'status', 'name', 'vendorName', 'createdAt', 'modifiedAt', 'tag', 'catalog']
+  var $XZPv$$interop$default = $parcel$interopDefault($XZPv$exports)
+  $XZPv$$interop$default.d.locale('ja')
+  $XZPv$$interop$default.d.extend($kx9$export$default)
+  const $Focm$var$tagProps = [
+    'id',
+    'status',
+    'name',
+    'vendorName',
+    'createdAt',
+    'modifiedAt',
+    'tag',
+    'catalog',
+    'conditionalFiring',
+  ]
+  const $Focm$var$csvHeaders = [
+    'ID',
+    'ステータス',
+    'タグ名',
+    'サービス提供元',
+    '作成日',
+    '更新日',
+    'カスタムタグ',
+    'カタログタグ',
+    'タグ実行条件',
+    '実行ページ',
+  ]
   GM_registerMenuCommand('タグをエクスポート', async () => {
-    const urls = Array.from($('.row-selected .tag-detail-link')).map(a => new URL('attributes', a.href))
+    const urls = Array.from($('.row-selected .tag-detail-link')).map(a => [
+      new URL('attributes', a.href),
+      new URL('page-assignments', a.href),
+    ])
     const totalCount = urls.length
 
     if (!totalCount) {
@@ -452,19 +562,29 @@
     }
 
     const modal = $Focm$var$ProgressModal.open({
-      maxValue: totalCount,
+      maxValue: totalCount * 2,
     })
-    unsafeWindow.__modal = modal
     const rows = await Promise.all(
-      urls.map(async url => {
-        const res = await $.get(url)
-        modal.increment()
-        return $Focm$var$tagDetailToRow(res)
+      urls.map(async urls => {
+        var _page$, _page$$urlPatterns, _page$$urlPatterns$in
+
+        const [{ tag }, page] = await $Focm$var$getAll(urls, () => modal.increment())
+        const urlPatterns =
+          ((_page$ = page[0]) === null || _page$ === void 0
+            ? void 0
+            : (_page$$urlPatterns = _page$.urlPatterns) === null || _page$$urlPatterns === void 0
+            ? void 0
+            : (_page$$urlPatterns$in = _page$$urlPatterns.includes) === null || _page$$urlPatterns$in === void 0
+            ? void 0
+            : _page$$urlPatterns$in.map(item => item.pattern)) || []
+        return $Focm$var$tagDetailToRow({
+          tag,
+          urlPatterns,
+        })
       }),
     )
-    rows.unshift($Focm$var$tagCsvHeaders)
+    rows.unshift($Focm$var$csvHeaders)
     console.log(rows)
-    var $XZPv$$interop$default = $parcel$interopDefault($XZPv$exports)
     const date = $XZPv$$interop$default.d().format('YYYYMMDD')
     const site = $('#currentSite')
       .text()
@@ -474,7 +594,24 @@
     $Focm$var$saveBlob(blob, fileName)
   })
 
-  async function $Focm$var$tagDetailToRow({ tag }) {
+  async function $Focm$var$getAll(urls, progress) {
+    return Promise.all(
+      urls.map(async url => {
+        const res = await $.get(url)
+        progress()
+        return res
+      }),
+    )
+  }
+
+  async function $Focm$var$tagDetailToRow({ tag, urlPatterns }) {
+    tag.status =
+      {
+        ACTIVE: '有効',
+        INACTIVE: '無効',
+      }[tag.status] || tag.status
+    tag.createdAt = $XZPv$$interop$default.d(tag.createdAt).format('llll')
+    tag.modifiedAt = $XZPv$$interop$default.d(tag.modifiedAt).format('llll')
     const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
 
     if (tag.defaultTagCategoryName === 'Functional') {
@@ -483,7 +620,8 @@
       tag.catalog = JSON.stringify(fields)
     }
 
-    return $Focm$var$tagCsvHeaders.map(k => tag[k])
+    const pageUrl = urlPatterns.join('\n')
+    return [...$Focm$var$tagProps.map(k => tag[k]), pageUrl]
   }
 
   function $Focm$var$saveBlob(blob, fileName) {
