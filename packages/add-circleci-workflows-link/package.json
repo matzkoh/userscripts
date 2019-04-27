@@ -2,7 +2,7 @@
   "name": "add-circleci-workflows-link",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "7.4.3"
+    "@babel/core": "7.4.4"
   },
   "engines": {
     "node": ">= 10",
