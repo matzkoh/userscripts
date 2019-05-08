@@ -11,7 +11,7 @@
     "@babel/plugin-proposal-pipeline-operator": "7.3.2",
     "@babel/plugin-proposal-throw-expressions": "7.2.0",
     "babel-eslint": "10.0.1",
-    "dayjs": "1.8.13",
+    "dayjs": "1.8.14",
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.2.0",
     "eslint-plugin-prettier": "3.0.1",
