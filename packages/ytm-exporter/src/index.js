@@ -11,9 +11,12 @@
 }
 
 import { registerTagExporter } from './exporter/tag'
+import { registerScriptExporter } from './exporter/script'
 
 // https://control.theyjtag.jp/sites/*/tags
 // https://control.theyjtag.jp/sites/*/pages/*/tag-assignments
 if (/^\/sites\/[^/]+\/(?:tags|pages\/[^/]+\/tag-assignments)$/.test(location.pathname)) {
   registerTagExporter()
 }
+
+registerScriptExporter()

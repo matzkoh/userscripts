@@ -665,9 +665,34 @@
     )
   }
 
-  function $th8$export$saveAsCsv(rows, fileName) {
+  async function $YOq$export$waitAll(promises, progress) {
+    var _promises$map
+
+    return (_promises$map = promises.map(p => p.then($YOq$export$tap(progress)))), Promise.all(_promises$map)
+  }
+
+  function $YOq$export$tap(fn) {
+    return function(arg) {
+      fn(arg)
+      return arg
+    }
+  }
+
+  function $YOq$export$arrayToMapByItemId(arr) {
+    const res = {}
+    arr.forEach(item => {
+      res[item.id] = item
+    })
+    return res
+  }
+
+  function $th8$export$saveAsCsv(rows, name) {
     const blob = $th8$var$createExcelCsvBlob(rows)
-    $th8$var$saveBlob(blob, fileName)
+    const date = $XZPv$$interop$default.d().format('YYYYMMDD')
+    const site = $('#currentSite')
+      .text()
+      .trim()
+    $th8$var$saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
   }
 
   function $th8$var$saveBlob(blob, fileName) {
@@ -780,15 +805,76 @@
       }),
     )
     rows.unshift($Fbc$var$csvHeader)
-    const date = $XZPv$$interop$default.d().format('YYYYMMDD')
-    const site = $('#currentSite')
-      .text()
-      .trim()
-    $th8$export$saveAsCsv(rows, `[${date}] [${site}] サービスタグ.csv`)
+    $th8$export$saveAsCsv(rows, 'サービスタグ')
   }
 
   function $Fbc$export$registerTagExporter() {
     GM_registerMenuCommand('タグをエクスポート', $Fbc$var$exportTag)
+  }
+
+  const $LVu9$var$baseUrl = location.pathname
+    .split('/')
+    .slice(0, 3)
+    .join('/')
+
+  async function $LVu9$export$getPages() {
+    return $.get(`${$LVu9$var$baseUrl}/pages-json`)
+  }
+
+  async function $LVu9$export$getTags() {
+    return $.get(`${$LVu9$var$baseUrl}/tags`)
+  }
+
+  async function $LVu9$export$getScripts() {
+    return $.get(`${$LVu9$var$baseUrl}/libraries-json`)
+  }
+
+  const $GzEd$var$itemProps = [
+    'id',
+    'order',
+    'name',
+    'description',
+    'url',
+    'scriptContents',
+    'tagIds',
+    'tagNames',
+    'pageIds',
+    'pageNames',
+  ]
+  const $GzEd$var$header = [
+    'ID',
+    '実行順序',
+    '名前',
+    '説明',
+    'URL',
+    'コード',
+    '依存タグ ID',
+    '依存タグ名',
+    '依存ページ ID',
+    '依存ページ名',
+  ]
+
+  async function $GzEd$var$exportScript() {
+    const resources = [$LVu9$export$getPages(), $LVu9$export$getTags(), $LVu9$export$getScripts()]
+    const modal = $hR3q$export$ProgressModal.open({
+      maxValue: resources.length,
+    })
+    const [pages, tags, scripts] = await $YOq$export$waitAll(resources, () => modal.increment())
+    const pageById = $YOq$export$arrayToMapByItemId(pages)
+    const tagById = $YOq$export$arrayToMapByItemId(tags)
+    const rows = scripts.map(item => {
+      item.tagIds = item.tagsId.join('\n')
+      item.pageIds = item.pagesId.join('\n')
+      item.tagNames = item.tagsId.map(id => tagById[id].name).join('\n')
+      item.pageNames = item.pagesId.map(id => pageById[id].name).join('\n')
+      return [...$GzEd$var$itemProps.map(k => item[k])]
+    })
+    rows.unshift($GzEd$var$header)
+    $th8$export$saveAsCsv(rows, 'スクリプト一覧')
+  }
+
+  function $GzEd$export$registerScriptExporter() {
+    GM_registerMenuCommand('スクリプトをエクスポート', $GzEd$var$exportScript)
   }
 
   {
@@ -799,4 +885,6 @@
   if (/^\/sites\/[^/]+\/(?:tags|pages\/[^/]+\/tag-assignments)$/.test(location.pathname)) {
     $Fbc$export$registerTagExporter()
   }
+
+  $GzEd$export$registerScriptExporter()
 })()
