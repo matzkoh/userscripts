@@ -63,12 +63,7 @@ async function exportTag() {
   )
   rows.unshift(csvHeader)
 
-  const date = dayjs().format('YYYYMMDD')
-  const site = $('#currentSite')
-    .text()
-    .trim()
-
-  saveAsCsv(rows, `[${date}] [${site}] サービスタグ.csv`)
+  saveAsCsv(rows, 'サービスタグ')
 }
 
 export function registerTagExporter() {

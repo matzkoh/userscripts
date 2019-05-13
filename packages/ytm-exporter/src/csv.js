@@ -1,6 +1,13 @@
-export function saveAsCsv(rows, fileName) {
+import dayjs from './dayjs'
+
+export function saveAsCsv(rows, name) {
   const blob = createExcelCsvBlob(rows)
-  saveBlob(blob, fileName)
+  const date = dayjs().format('YYYYMMDD')
+  const site = $('#currentSite')
+    .text()
+    .trim()
+
+  saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
 }
 
 function saveBlob(blob, fileName) {
