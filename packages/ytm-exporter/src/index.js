@@ -2,7 +2,7 @@
   // ==UserScript==
   // @name         YTM Exporter
   // @namespace    https://github.com/matzkoh
-  // @version      1.1.0
+  // @version      1.1.1
   // @description  Export to excel for YTM console
   // @author       matzkoh
   // @include      https://control.theyjtag.jp/sites/*/tags
