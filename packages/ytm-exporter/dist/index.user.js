@@ -4,8 +4,7 @@
 // @version      1.1.1
 // @description  Export to excel for YTM console
 // @author       matzkoh
-// @include      https://control.theyjtag.jp/sites/*/tags
-// @include      https://control.theyjtag.jp/sites/*/pages/*/tag-assignments
+// @include      https://control.theyjtag.jp/sites/*
 // @grant        GM_registerMenuCommand
 // ==/UserScript==
 
@@ -451,7 +450,6 @@
     })
   }
 
-  // ASSET: index.js
   $XZPv$init()
   // ASSET: ../../../node_modules/dayjs/locale/ja.js
   var $tgU2$exports = {}
@@ -546,144 +544,12 @@
     }
   }
 
-  {
-  }
-
-  /* global $:false */
-
   var $XZPv$$interop$default = $parcel$interopDefault($XZPv$exports)
   $XZPv$$interop$default.d.locale('ja')
   $XZPv$$interop$default.d.extend($kx9$export$default)
-  const $Focm$var$tagProps = [
-    'id',
-    'status',
-    'name',
-    'vendorName',
-    'createdAt',
-    'modifiedAt',
-    'tag',
-    'catalog',
-    'conditionalFiring',
-  ]
-  const $Focm$var$csvHeaders = [
-    'ID',
-    'ステータス',
-    'タグ名',
-    'サービス提供元',
-    '作成日',
-    '更新日',
-    'カスタムタグ',
-    'カタログタグ',
-    'タグ実行条件',
-    '実行ページ',
-  ]
-  GM_registerMenuCommand('タグをエクスポート', async () => {
-    const urls = Array.from($('.row-selected .tag-detail-link')).map(a => [
-      new URL('attributes', a.href),
-      new URL('page-assignments', a.href),
-    ])
-    const totalCount = urls.length
 
-    if (!totalCount) {
-      $Focm$var$AlertModal.open({
-        message: 'エクスポートするタグを選択してください',
-      })
-      return
-    }
-
-    const modal = $Focm$var$ProgressModal.open({
-      maxValue: totalCount * 2,
-    })
-    const rows = await Promise.all(
-      urls.map(async urls => {
-        var _page$, _page$$urlPatterns, _page$$urlPatterns$in
-
-        const [{ tag }, page] = await $Focm$var$getAll(urls, () => modal.increment())
-        const urlPatterns =
-          ((_page$ = page[0]) === null || _page$ === void 0
-            ? void 0
-            : (_page$$urlPatterns = _page$.urlPatterns) === null || _page$$urlPatterns === void 0
-            ? void 0
-            : (_page$$urlPatterns$in = _page$$urlPatterns.includes) === null || _page$$urlPatterns$in === void 0
-            ? void 0
-            : _page$$urlPatterns$in.map(item => item.pattern)) || []
-        return $Focm$var$tagDetailToRow({
-          tag,
-          urlPatterns,
-        })
-      }),
-    )
-    rows.unshift($Focm$var$csvHeaders)
-    console.log(rows)
-    const date = $XZPv$$interop$default.d().format('YYYYMMDD')
-    const site = $('#currentSite')
-      .text()
-      .trim()
-    const blob = $Focm$var$createExcelCsvBlob(rows)
-    const fileName = `[${date}] [${site}] サービスタグ.csv`
-    $Focm$var$saveBlob(blob, fileName)
-  })
-
-  async function $Focm$var$getAll(urls, progress) {
-    return Promise.all(
-      urls.map(async url => {
-        const res = await $.get(url)
-        progress()
-        return res
-      }),
-    )
-  }
-
-  async function $Focm$var$tagDetailToRow({ tag, urlPatterns }) {
-    tag.status =
-      {
-        ACTIVE: '有効',
-        INACTIVE: '無効',
-      }[tag.status] || tag.status
-    tag.createdAt = $XZPv$$interop$default.d(tag.createdAt).format('llll')
-    tag.modifiedAt = $XZPv$$interop$default.d(tag.modifiedAt).format('llll')
-    const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
-
-    if (tag.defaultTagCategoryName === 'Functional') {
-      tag.tag = fields.markup
-    } else {
-      tag.catalog = JSON.stringify(fields)
-    }
-
-    const pageUrl = urlPatterns.join('\n')
-    return [...$Focm$var$tagProps.map(k => tag[k]), pageUrl]
-  }
-
-  function $Focm$var$saveBlob(blob, fileName) {
-    const url = URL.createObjectURL(blob)
-    $('<a/>')
-      .attr('download', fileName)
-      .prop('href', url)
-      .appendTo('body')
-      .each((_, a) => a.click())
-      .remove()
-    URL.revokeObjectURL(url)
-  }
-
-  function $Focm$var$createExcelCsvBlob(rows) {
-    const value = $Focm$var$csvStringify(rows)
-    const bom = new Uint8Array([0xef, 0xbb, 0xbf])
-    return new Blob([bom, value], {
-      type: 'text/csv',
-    })
-  }
-
-  function $Focm$var$csvStringify(rows) {
-    return rows.map(cells => cells.map($Focm$var$quoteForCsv).join(',')).join('\r\n')
-  }
-
-  function $Focm$var$quoteForCsv(value) {
-    var _value
-
-    return `"${String((_value = value) !== null && _value !== void 0 ? _value : '').replace(/"/g, '""')}"`
-  }
-
-  class $Focm$var$Modal {
+  /* global $:false */
+  class $hR3q$export$Modal {
     constructor(options) {
       const html = `
       <div class="ytm-ex-modal">
@@ -738,7 +604,7 @@
     }
   }
 
-  class $Focm$var$AlertModal extends $Focm$var$Modal {
+  class $hR3q$export$AlertModal extends $hR3q$export$Modal {
     constructor(options) {
       super({ ...options, closeOnClick: true })
       this.body.text(this.options.message).css({
@@ -747,7 +613,7 @@
     }
   }
 
-  class $Focm$var$ProgressModal extends $Focm$var$Modal {
+  class $hR3q$export$ProgressModal extends $hR3q$export$Modal {
     constructor(options) {
       super(options)
       this.value = 0
@@ -787,5 +653,150 @@
       this.value += value
       return this.update()
     }
+  }
+
+  async function $YOq$export$getAll(urls, progress) {
+    return Promise.all(
+      urls.map(async url => {
+        const res = await $.get(url)
+        progress()
+        return res
+      }),
+    )
+  }
+
+  function $th8$export$saveAsCsv(rows, fileName) {
+    const blob = $th8$var$createExcelCsvBlob(rows)
+    $th8$var$saveBlob(blob, fileName)
+  }
+
+  function $th8$var$saveBlob(blob, fileName) {
+    const url = URL.createObjectURL(blob)
+    $('<a/>')
+      .attr('download', fileName)
+      .prop('href', url)
+      .appendTo('body')
+      .each((_, a) => a.click())
+      .remove()
+    URL.revokeObjectURL(url)
+  }
+
+  function $th8$var$createExcelCsvBlob(rows) {
+    const value = $th8$var$csvStringify(rows)
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf])
+    return new Blob([bom, value], {
+      type: 'text/csv',
+    })
+  }
+
+  function $th8$var$csvStringify(rows) {
+    return rows.map(cells => cells.map($th8$var$quoteForCsv).join(',')).join('\r\n')
+  }
+
+  function $th8$var$quoteForCsv(value) {
+    var _value
+
+    return `"${String((_value = value) !== null && _value !== void 0 ? _value : '').replace(/"/g, '""')}"`
+  }
+
+  const $Fbc$var$tagProps = [
+    'id',
+    'status',
+    'name',
+    'vendorName',
+    'createdAt',
+    'modifiedAt',
+    'tag',
+    'catalog',
+    'conditionalFiring',
+  ]
+  const $Fbc$var$csvHeader = [
+    'ID',
+    'ステータス',
+    'タグ名',
+    'サービス提供元',
+    '作成日',
+    '更新日',
+    'カスタムタグ',
+    'カタログタグ',
+    'タグ実行条件',
+    '実行ページ',
+  ]
+
+  async function $Fbc$var$tagDetailToRow({ tag, urlPatterns }) {
+    tag.status =
+      {
+        ACTIVE: '有効',
+        INACTIVE: '無効',
+      }[tag.status] || tag.status
+    tag.createdAt = $XZPv$$interop$default.d(tag.createdAt).format('llll')
+    tag.modifiedAt = $XZPv$$interop$default.d(tag.modifiedAt).format('llll')
+    const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
+
+    if (tag.defaultTagCategoryName === 'Functional') {
+      tag.tag = fields.markup
+    } else {
+      tag.catalog = JSON.stringify(fields)
+    }
+
+    const pageUrl = urlPatterns.join('\n')
+    return [...$Fbc$var$tagProps.map(k => tag[k]), pageUrl]
+  }
+
+  async function $Fbc$var$exportTag() {
+    const urls = Array.from($('.row-selected .tag-detail-link')).map(a => [
+      new URL('attributes', a.href),
+      new URL('page-assignments', a.href),
+    ])
+    const totalCount = urls.length
+
+    if (!totalCount) {
+      $hR3q$export$AlertModal.open({
+        message: 'エクスポートするタグを選択してください',
+      })
+      return
+    }
+
+    const modal = $hR3q$export$ProgressModal.open({
+      maxValue: totalCount * 2,
+    })
+    const rows = await Promise.all(
+      urls.map(async urls => {
+        var _page$, _page$$urlPatterns, _page$$urlPatterns$in
+
+        const [{ tag }, page] = await $YOq$export$getAll(urls, () => modal.increment())
+        const urlPatterns =
+          ((_page$ = page[0]) === null || _page$ === void 0
+            ? void 0
+            : (_page$$urlPatterns = _page$.urlPatterns) === null || _page$$urlPatterns === void 0
+            ? void 0
+            : (_page$$urlPatterns$in = _page$$urlPatterns.includes) === null || _page$$urlPatterns$in === void 0
+            ? void 0
+            : _page$$urlPatterns$in.map(item => item.pattern)) || []
+        return $Fbc$var$tagDetailToRow({
+          tag,
+          urlPatterns,
+        })
+      }),
+    )
+    rows.unshift($Fbc$var$csvHeader)
+    const date = $XZPv$$interop$default.d().format('YYYYMMDD')
+    const site = $('#currentSite')
+      .text()
+      .trim()
+    $th8$export$saveAsCsv(rows, `[${date}] [${site}] サービスタグ.csv`)
+  }
+
+  function $Fbc$export$registerTagExporter() {
+    GM_registerMenuCommand('タグをエクスポート', $Fbc$var$exportTag)
+  }
+
+  {
+  }
+  // https://control.theyjtag.jp/sites/*/tags
+  // https://control.theyjtag.jp/sites/*/pages/*/tag-assignments
+
+  if (/^\/sites\/[^/]+\/(?:tags|pages\/[^/]+\/tag-assignments)$/.test(location.pathname)) {
+    $Fbc$export$registerTagExporter()
   }
 })()
