@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YTM Exporter
 // @namespace    https://github.com/matzkoh
-// @version      1.2.0
+// @version      1.3.0
 // @description  Export to excel for YTM console
 // @author       matzkoh
 // @include      https://control.theyjtag.jp/sites/*
@@ -564,6 +564,14 @@
     return $.get(`${$LVu9$var$baseUrl}/libraries-json`)
   }
 
+  async function $LVu9$export$getTagAttributes(id) {
+    return (await $.get(`${$LVu9$var$baseUrl}/tags/${id}/attributes`)).tag
+  }
+
+  async function $LVu9$export$getTagPageAssignments(id) {
+    return $.get(`${$LVu9$var$baseUrl}/tags/${id}/page-assignments`)
+  }
+
   function $th8$export$saveAsCsv(rows, name) {
     const blob = $th8$var$createExcelCsvBlob(rows)
     const date = $XZPv$$interop$default.d().format('YYYYMMDD')
@@ -597,9 +605,21 @@
   }
 
   function $th8$var$quoteForCsv(value) {
+    return `"${$th8$var$convertValue(value).replace(/"/g, '""')}"`
+  }
+
+  function $th8$var$convertValue(value) {
     var _value
 
-    return `"${String((_value = value) !== null && _value !== void 0 ? _value : '').replace(/"/g, '""')}"`
+    if (Array.isArray(value)) {
+      return value.map($th8$var$convertValue).join('\n')
+    }
+
+    if (value instanceof Object) {
+      return JSON.stringify(value)
+    }
+
+    return String((_value = value) !== null && _value !== void 0 ? _value : '')
   }
 
   /* global $:false */
@@ -709,20 +729,14 @@
     }
   }
 
-  async function $YOq$export$getAll(urls, progress) {
-    return Promise.all(
-      urls.map(async url => {
-        const res = await $.get(url)
-        progress()
-        return res
-      }),
-    )
-  }
-
   async function $YOq$export$waitAll(promises, progress) {
     var _promises$map
 
     return (_promises$map = promises.map(p => p.then($YOq$export$tap(progress)))), Promise.all(_promises$map)
+  }
+
+  function $YOq$export$unique(arr) {
+    return arr.filter((value, i) => arr.indexOf(value) === i)
   }
 
   function $YOq$export$tap(fn) {
@@ -738,6 +752,43 @@
       res[item.id] = item
     })
     return res
+  }
+
+  function $YOq$export$convertPatterns(urlPatterns) {
+    var _ref, _urlPatterns$includes, _ref2, _urlPatterns$excludes
+
+    return {
+      includes:
+        (_ref =
+          urlPatterns === null || urlPatterns === void 0
+            ? void 0
+            : (_urlPatterns$includes = urlPatterns.includes) === null || _urlPatterns$includes === void 0
+            ? void 0
+            : _urlPatterns$includes.map(item => {
+                var _item$pattern
+
+                return (_item$pattern = item.pattern) !== null && _item$pattern !== void 0
+                  ? _item$pattern
+                  : '(不明なデータ)'
+              })) !== null && _ref !== void 0
+          ? _ref
+          : [],
+      excludes:
+        (_ref2 =
+          urlPatterns === null || urlPatterns === void 0
+            ? void 0
+            : (_urlPatterns$excludes = urlPatterns.excludes) === null || _urlPatterns$excludes === void 0
+            ? void 0
+            : _urlPatterns$excludes.map(item => {
+                var _item$pattern2
+
+                return (_item$pattern2 = item.pattern) !== null && _item$pattern2 !== void 0
+                  ? _item$pattern2
+                  : '(不明なデータ)'
+              })) !== null && _ref2 !== void 0
+          ? _ref2
+          : [],
+    }
   }
 
   const $pM$var$columns = [
@@ -758,32 +809,9 @@
     })
     const [pages] = await $YOq$export$waitAll(resources, () => modal.increment())
     const rows = pages.map(item => {
-      var _item$urlPatterns, _item$urlPatterns$inc, _item$urlPatterns2, _item$urlPatterns2$ex
-
-      item.includes =
-        (_item$urlPatterns = item.urlPatterns) === null || _item$urlPatterns === void 0
-          ? void 0
-          : (_item$urlPatterns$inc = _item$urlPatterns.includes) === null || _item$urlPatterns$inc === void 0
-          ? void 0
-          : _item$urlPatterns$inc
-              .map(o => {
-                var _o$pattern
-
-                return (_o$pattern = o.pattern) !== null && _o$pattern !== void 0 ? _o$pattern : ''
-              })
-              .join('\n')
-      item.excludes =
-        (_item$urlPatterns2 = item.urlPatterns) === null || _item$urlPatterns2 === void 0
-          ? void 0
-          : (_item$urlPatterns2$ex = _item$urlPatterns2.excludes) === null || _item$urlPatterns2$ex === void 0
-          ? void 0
-          : _item$urlPatterns2$ex
-              .map(o => {
-                var _o$pattern2
-
-                return (_o$pattern2 = o.pattern) !== null && _o$pattern2 !== void 0 ? _o$pattern2 : ''
-              })
-              .join('\n')
+      const { includes, excludes } = $YOq$export$convertPatterns(item.urlPatterns)
+      item.includes = includes
+      item.excludes = excludes
       item.createdAt = $XZPv$$interop$default.d(item.createdAt).format('llll')
       item.modifiedAt = $XZPv$$interop$default.d(item.modifiedAt).format('llll')
       return [...$pM$var$columns.map(column => item[column[0]])]
@@ -841,22 +869,18 @@
         ((_item$pagesId = item.pagesId) === null || _item$pagesId === void 0
           ? void 0
           : _item$pagesId.filter(id => id in pageById)) || []
-      item.tagIds = tagIds.join('\n')
-      item.pageIds = pageIds.join('\n')
-      item.tagNames = tagIds
-        .map(id => {
-          var _tagById$id
+      item.tagIds = tagIds
+      item.pageIds = pageIds
+      item.tagNames = tagIds.map(id => {
+        var _tagById$id
 
-          return (_tagById$id = tagById[id]) === null || _tagById$id === void 0 ? void 0 : _tagById$id.name
-        })
-        .join('\n')
-      item.pageNames = pageIds
-        .map(id => {
-          var _pageById$id
+        return (_tagById$id = tagById[id]) === null || _tagById$id === void 0 ? void 0 : _tagById$id.name
+      })
+      item.pageNames = pageIds.map(id => {
+        var _pageById$id
 
-          return (_pageById$id = pageById[id]) === null || _pageById$id === void 0 ? void 0 : _pageById$id.name
-        })
-        .join('\n')
+        return (_pageById$id = pageById[id]) === null || _pageById$id === void 0 ? void 0 : _pageById$id.name
+      })
       return [...$GzEd$var$itemProps.map(k => item[k])]
     })
     rows.unshift($GzEd$var$header)
@@ -867,58 +891,30 @@
     GM_registerMenuCommand('スクリプトをエクスポート', $GzEd$var$exportScript)
   }
 
-  const $Fbc$var$tagProps = [
-    'id',
-    'status',
-    'name',
-    'vendorName',
-    'createdAt',
-    'modifiedAt',
-    'tag',
-    'catalog',
-    'conditionalFiring',
+  const $Fbc$var$columns = [
+    ['id', 'ID'],
+    ['status', 'ステータス'],
+    ['name', 'タグ名'],
+    ['vendorName', 'サービス提供元'],
+    ['tag', 'カスタムタグ'],
+    ['catalog', 'カタログタグ'],
+    ['conditionalFiring', 'タグ実行条件'],
+    ['pageIds', '実行ページ ID'],
+    ['pageNames', '実行ページ名'],
+    ['includes', '対象 URL パターン'],
+    ['excludes', '対象外 URL パターン'],
+    ['createdAt', '作成日'],
+    ['modifiedAt', '更新日'],
   ]
-  const $Fbc$var$csvHeader = [
-    'ID',
-    'ステータス',
-    'タグ名',
-    'サービス提供元',
-    '作成日',
-    '更新日',
-    'カスタムタグ',
-    'カタログタグ',
-    'タグ実行条件',
-    '実行ページ',
-  ]
-
-  async function $Fbc$var$tagDetailToRow({ tag, urlPatterns }) {
-    tag.status =
-      {
-        ACTIVE: '有効',
-        INACTIVE: '無効',
-      }[tag.status] || tag.status
-    tag.createdAt = $XZPv$$interop$default.d(tag.createdAt).format('llll')
-    tag.modifiedAt = $XZPv$$interop$default.d(tag.modifiedAt).format('llll')
-    const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
-
-    if (tag.defaultTagCategoryName === 'Functional') {
-      tag.tag = fields.markup
-    } else {
-      tag.catalog = JSON.stringify(fields)
-    }
-
-    const pageUrl = urlPatterns.join('\n')
-    return [...$Fbc$var$tagProps.map(k => tag[k]), pageUrl]
-  }
 
   async function $Fbc$var$exportTag() {
-    const urls = Array.from($('.row-selected .tag-detail-link')).map(a => [
-      new URL('attributes', a.href),
-      new URL('page-assignments', a.href),
-    ])
-    const totalCount = urls.length
+    const tagIds = Array.from($('.row-selected')).map(el => el.dataset.tagId)
 
-    if (!totalCount) {
+    if (tagIds.findIndex(id => !id) !== -1) {
+      throw new Error('不正な選択アイテムがあります')
+    }
+
+    if (!tagIds.length) {
       $hR3q$export$AlertModal.open({
         message: 'エクスポートするタグを選択してください',
       })
@@ -926,28 +922,43 @@
     }
 
     const modal = $hR3q$export$ProgressModal.open({
-      maxValue: totalCount * 2,
+      maxValue: tagIds.length * 2,
     })
     const rows = await Promise.all(
-      urls.map(async urls => {
-        var _page$, _page$$urlPatterns, _page$$urlPatterns$in
+      tagIds.map(async id => {
+        var _patterns$flatMap$sor, _patterns$flatMap$sor2
 
-        const [{ tag }, page] = await $YOq$export$getAll(urls, () => modal.increment())
-        const urlPatterns =
-          ((_page$ = page[0]) === null || _page$ === void 0
-            ? void 0
-            : (_page$$urlPatterns = _page$.urlPatterns) === null || _page$$urlPatterns === void 0
-            ? void 0
-            : (_page$$urlPatterns$in = _page$$urlPatterns.includes) === null || _page$$urlPatterns$in === void 0
-            ? void 0
-            : _page$$urlPatterns$in.map(item => item.pattern)) || []
-        return $Fbc$var$tagDetailToRow({
-          tag,
-          urlPatterns,
-        })
+        const [tag, pages] = await $YOq$export$waitAll(
+          [$LVu9$export$getTagAttributes(id), $LVu9$export$getTagPageAssignments(id)],
+          () => modal.increment(),
+        )
+        tag.pageIds = pages.map(p => p.id)
+        tag.pageNames = pages.map(p => p.name)
+        const patterns = pages.map(p => $YOq$export$convertPatterns(p.urlPatterns))
+        tag.includes = ((_patterns$flatMap$sor = patterns.flatMap(item => item.includes).sort()),
+        $YOq$export$unique(_patterns$flatMap$sor))
+        tag.excludes = ((_patterns$flatMap$sor2 = patterns.flatMap(item => item.excludes).sort()),
+        $YOq$export$unique(_patterns$flatMap$sor2))
+        const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
+
+        if (tag.defaultTagCategoryName === 'Functional') {
+          tag.tag = fields.markup
+        } else {
+          tag.catalog = fields
+        }
+
+        tag.status =
+          {
+            ACTIVE: '有効',
+            INACTIVE: '無効',
+          }[tag.status] || tag.status
+        tag.createdAt = $XZPv$$interop$default.d(tag.createdAt).format('llll')
+        tag.modifiedAt = $XZPv$$interop$default.d(tag.modifiedAt).format('llll')
+        return [...$Fbc$var$columns.map(column => tag[column[0]])]
       }),
     )
-    rows.unshift($Fbc$var$csvHeader)
+    const header = $Fbc$var$columns.map(c => c[1])
+    rows.unshift(header)
     $th8$export$saveAsCsv(rows, 'サービスタグ')
   }
 

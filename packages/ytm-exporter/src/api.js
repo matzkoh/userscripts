@@ -14,3 +14,11 @@ export async function getTags() {
 export async function getScripts() {
   return $.get(`${baseUrl}/libraries-json`)
 }
+
+export async function getTagAttributes(id) {
+  return (await $.get(`${baseUrl}/tags/${id}/attributes`)).tag
+}
+
+export async function getTagPageAssignments(id) {
+  return $.get(`${baseUrl}/tags/${id}/page-assignments`)
+}

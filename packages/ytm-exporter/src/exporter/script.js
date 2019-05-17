@@ -37,10 +37,10 @@ async function exportScript() {
   const rows = scripts.map(item => {
     const tagIds = item.tagsId?.filter(id => id in tagById) || []
     const pageIds = item.pagesId?.filter(id => id in pageById) || []
-    item.tagIds = tagIds.join('\n')
-    item.pageIds = pageIds.join('\n')
-    item.tagNames = tagIds.map(id => tagById[id]?.name).join('\n')
-    item.pageNames = pageIds.map(id => pageById[id]?.name).join('\n')
+    item.tagIds = tagIds
+    item.pageIds = pageIds
+    item.tagNames = tagIds.map(id => tagById[id]?.name)
+    item.pageNames = pageIds.map(id => pageById[id]?.name)
     return [...itemProps.map(k => item[k])]
   })
   rows.unshift(header)

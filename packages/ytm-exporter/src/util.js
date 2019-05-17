@@ -1,15 +1,9 @@
-export async function getAll(urls, progress) {
-  return Promise.all(
-    urls.map(async url => {
-      const res = await $.get(url)
-      progress()
-      return res
-    }),
-  )
-}
-
 export async function waitAll(promises, progress) {
   return promises.map(p => p.then(tap(progress))) |> Promise.all
+}
+
+export function unique(arr) {
+  return arr.filter((value, i) => arr.indexOf(value) === i)
 }
 
 export function tap(fn) {
@@ -25,4 +19,11 @@ export function arrayToMapByItemId(arr) {
     res[item.id] = item
   })
   return res
+}
+
+export function convertPatterns(urlPatterns) {
+  return {
+    includes: urlPatterns?.includes?.map(item => item.pattern ?? '(不明なデータ)') ?? [],
+    excludes: urlPatterns?.excludes?.map(item => item.pattern ?? '(不明なデータ)') ?? [],
+  }
 }

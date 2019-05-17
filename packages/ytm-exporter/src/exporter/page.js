@@ -2,7 +2,7 @@ import dayjs from '../dayjs'
 import { getPages } from '../api'
 import { saveAsCsv } from '../csv'
 import { ProgressModal } from '../modal'
-import { waitAll } from '../util'
+import { convertPatterns, waitAll } from '../util'
 
 const columns = [
   ['id', 'ID'],
@@ -20,8 +20,9 @@ async function exportPage() {
   const modal = ProgressModal.open({ maxValue: resources.length })
   const [pages] = await waitAll(resources, () => modal.increment())
   const rows = pages.map(item => {
-    item.includes = item.urlPatterns?.includes?.map(o => o.pattern ?? '').join('\n')
-    item.excludes = item.urlPatterns?.excludes?.map(o => o.pattern ?? '').join('\n')
+    const { includes, excludes } = convertPatterns(item.urlPatterns)
+    item.includes = includes
+    item.excludes = excludes
     item.createdAt = dayjs(item.createdAt).format('llll')
     item.modifiedAt = dayjs(item.modifiedAt).format('llll')
     return [...columns.map(column => item[column[0]])]

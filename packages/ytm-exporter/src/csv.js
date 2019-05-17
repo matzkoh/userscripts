@@ -34,5 +34,15 @@ function csvStringify(rows) {
 }
 
 function quoteForCsv(value) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`
+  return `"${convertValue(value).replace(/"/g, '""')}"`
+}
+
+function convertValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(convertValue).join('\n')
+  }
+  if (value instanceof Object) {
+    return JSON.stringify(value)
+  }
+  return String(value ?? '')
 }

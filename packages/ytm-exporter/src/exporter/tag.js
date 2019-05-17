@@ -1,68 +1,58 @@
 import dayjs from '../dayjs'
-import { AlertModal, ProgressModal } from '../modal'
-import { getAll } from '../util'
+import { getTagAttributes, getTagPageAssignments } from '../api'
 import { saveAsCsv } from '../csv'
+import { AlertModal, ProgressModal } from '../modal'
+import { convertPatterns, unique, waitAll } from '../util'
 
-const tagProps = [
-  'id',
-  'status',
-  'name',
-  'vendorName',
-  'createdAt',
-  'modifiedAt',
-  'tag',
-  'catalog',
-  'conditionalFiring',
+const columns = [
+  ['id', 'ID'],
+  ['status', 'ステータス'],
+  ['name', 'タグ名'],
+  ['vendorName', 'サービス提供元'],
+  ['tag', 'カスタムタグ'],
+  ['catalog', 'カタログタグ'],
+  ['conditionalFiring', 'タグ実行条件'],
+  ['pageIds', '実行ページ ID'],
+  ['pageNames', '実行ページ名'],
+  ['includes', '対象 URL パターン'],
+  ['excludes', '対象外 URL パターン'],
+  ['createdAt', '作成日'],
+  ['modifiedAt', '更新日'],
 ]
-const csvHeader = [
-  'ID',
-  'ステータス',
-  'タグ名',
-  'サービス提供元',
-  '作成日',
-  '更新日',
-  'カスタムタグ',
-  'カタログタグ',
-  'タグ実行条件',
-  '実行ページ',
-]
-
-async function tagDetailToRow({ tag, urlPatterns }) {
-  tag.status = { ACTIVE: '有効', INACTIVE: '無効' }[tag.status] || tag.status
-  tag.createdAt = dayjs(tag.createdAt).format('llll')
-  tag.modifiedAt = dayjs(tag.modifiedAt).format('llll')
-
-  const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
-  if (tag.defaultTagCategoryName === 'Functional') {
-    tag.tag = fields.markup
-  } else {
-    tag.catalog = JSON.stringify(fields)
-  }
-  const pageUrl = urlPatterns.join('\n')
-  return [...tagProps.map(k => tag[k]), pageUrl]
-}
 
 async function exportTag() {
-  const urls = Array.from($('.row-selected .tag-detail-link')).map(a => [
-    new URL('attributes', a.href),
-    new URL('page-assignments', a.href),
-  ])
-  const totalCount = urls.length
-  if (!totalCount) {
+  const tagIds = Array.from($('.row-selected')).map(el => el.dataset.tagId)
+  if (tagIds.findIndex(id => !id) !== -1) {
+    throw new Error('不正な選択アイテムがあります')
+  }
+  if (!tagIds.length) {
     AlertModal.open({ message: 'エクスポートするタグを選択してください' })
     return
   }
 
-  const modal = ProgressModal.open({ maxValue: totalCount * 2 })
+  const modal = ProgressModal.open({ maxValue: tagIds.length * 2 })
   const rows = await Promise.all(
-    urls.map(async urls => {
-      const [{ tag }, page] = await getAll(urls, () => modal.increment())
-      const urlPatterns = page[0]?.urlPatterns?.includes?.map(item => item.pattern) || []
-      return tagDetailToRow({ tag, urlPatterns })
+    tagIds.map(async id => {
+      const [tag, pages] = await waitAll([getTagAttributes(id), getTagPageAssignments(id)], () => modal.increment())
+      tag.pageIds = pages.map(p => p.id)
+      tag.pageNames = pages.map(p => p.name)
+      const patterns = pages.map(p => convertPatterns(p.urlPatterns))
+      tag.includes = patterns.flatMap(item => item.includes).sort() |> unique
+      tag.excludes = patterns.flatMap(item => item.excludes).sort() |> unique
+      const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
+      if (tag.defaultTagCategoryName === 'Functional') {
+        tag.tag = fields.markup
+      } else {
+        tag.catalog = fields
+      }
+      tag.status = { ACTIVE: '有効', INACTIVE: '無効' }[tag.status] || tag.status
+      tag.createdAt = dayjs(tag.createdAt).format('llll')
+      tag.modifiedAt = dayjs(tag.modifiedAt).format('llll')
+      return [...columns.map(column => tag[column[0]])]
     }),
   )
-  rows.unshift(csvHeader)
-
+  const header = columns.map(c => c[1])
+  rows.unshift(header)
   saveAsCsv(rows, 'サービスタグ')
 }
 
