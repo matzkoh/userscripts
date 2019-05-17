@@ -35,10 +35,12 @@ async function exportScript() {
   const pageById = arrayToMapByItemId(pages)
   const tagById = arrayToMapByItemId(tags)
   const rows = scripts.map(item => {
-    item.tagIds = item.tagsId.join('\n')
-    item.pageIds = item.pagesId.join('\n')
-    item.tagNames = item.tagsId.map(id => tagById[id].name).join('\n')
-    item.pageNames = item.pagesId.map(id => pageById[id].name).join('\n')
+    const tagIds = item.tagsId?.filter(id => id in tagById) || []
+    const pageIds = item.pagesId?.filter(id => id in pageById) || []
+    item.tagIds = tagIds.join('\n')
+    item.pageIds = pageIds.join('\n')
+    item.tagNames = tagIds.map(id => tagById[id]?.name).join('\n')
+    item.pageNames = pageIds.map(id => pageById[id]?.name).join('\n')
     return [...itemProps.map(k => item[k])]
   })
   rows.unshift(header)

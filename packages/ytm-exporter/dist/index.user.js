@@ -863,10 +863,32 @@
     const pageById = $YOq$export$arrayToMapByItemId(pages)
     const tagById = $YOq$export$arrayToMapByItemId(tags)
     const rows = scripts.map(item => {
-      item.tagIds = item.tagsId.join('\n')
-      item.pageIds = item.pagesId.join('\n')
-      item.tagNames = item.tagsId.map(id => tagById[id].name).join('\n')
-      item.pageNames = item.pagesId.map(id => pageById[id].name).join('\n')
+      var _item$tagsId, _item$pagesId
+
+      const tagIds =
+        ((_item$tagsId = item.tagsId) === null || _item$tagsId === void 0
+          ? void 0
+          : _item$tagsId.filter(id => id in tagById)) || []
+      const pageIds =
+        ((_item$pagesId = item.pagesId) === null || _item$pagesId === void 0
+          ? void 0
+          : _item$pagesId.filter(id => id in pageById)) || []
+      item.tagIds = tagIds.join('\n')
+      item.pageIds = pageIds.join('\n')
+      item.tagNames = tagIds
+        .map(id => {
+          var _tagById$id
+
+          return (_tagById$id = tagById[id]) === null || _tagById$id === void 0 ? void 0 : _tagById$id.name
+        })
+        .join('\n')
+      item.pageNames = pageIds
+        .map(id => {
+          var _pageById$id
+
+          return (_pageById$id = pageById[id]) === null || _pageById$id === void 0 ? void 0 : _pageById$id.name
+        })
+        .join('\n')
       return [...$GzEd$var$itemProps.map(k => item[k])]
     })
     rows.unshift($GzEd$var$header)
