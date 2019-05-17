@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YTM Exporter
 // @namespace    https://github.com/matzkoh
-// @version      1.1.1
+// @version      1.2.0
 // @description  Export to excel for YTM console
 // @author       matzkoh
 // @include      https://control.theyjtag.jp/sites/*
@@ -547,6 +547,60 @@
   var $XZPv$$interop$default = $parcel$interopDefault($XZPv$exports)
   $XZPv$$interop$default.d.locale('ja')
   $XZPv$$interop$default.d.extend($kx9$export$default)
+  const $LVu9$var$baseUrl = location.pathname
+    .split('/')
+    .slice(0, 3)
+    .join('/')
+
+  async function $LVu9$export$getPages() {
+    return $.get(`${$LVu9$var$baseUrl}/pages-json`)
+  }
+
+  async function $LVu9$export$getTags() {
+    return $.get(`${$LVu9$var$baseUrl}/tags`)
+  }
+
+  async function $LVu9$export$getScripts() {
+    return $.get(`${$LVu9$var$baseUrl}/libraries-json`)
+  }
+
+  function $th8$export$saveAsCsv(rows, name) {
+    const blob = $th8$var$createExcelCsvBlob(rows)
+    const date = $XZPv$$interop$default.d().format('YYYYMMDD')
+    const site = $('#currentSite')
+      .text()
+      .trim()
+    $th8$var$saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
+  }
+
+  function $th8$var$saveBlob(blob, fileName) {
+    const url = URL.createObjectURL(blob)
+    $('<a/>')
+      .attr('download', fileName)
+      .prop('href', url)
+      .appendTo('body')
+      .each((_, a) => a.click())
+      .remove()
+    URL.revokeObjectURL(url)
+  }
+
+  function $th8$var$createExcelCsvBlob(rows) {
+    const value = $th8$var$csvStringify(rows)
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf])
+    return new Blob([bom, value], {
+      type: 'text/csv',
+    })
+  }
+
+  function $th8$var$csvStringify(rows) {
+    return rows.map(cells => cells.map($th8$var$quoteForCsv).join(',')).join('\r\n')
+  }
+
+  function $th8$var$quoteForCsv(value) {
+    var _value
+
+    return `"${String((_value = value) !== null && _value !== void 0 ? _value : '').replace(/"/g, '""')}"`
+  }
 
   /* global $:false */
   class $hR3q$export$Modal {
@@ -686,42 +740,131 @@
     return res
   }
 
-  function $th8$export$saveAsCsv(rows, name) {
-    const blob = $th8$var$createExcelCsvBlob(rows)
-    const date = $XZPv$$interop$default.d().format('YYYYMMDD')
-    const site = $('#currentSite')
-      .text()
-      .trim()
-    $th8$var$saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
-  }
+  const $pM$var$columns = [
+    ['id', 'ID'],
+    ['name', '名前'],
+    ['includes', '対象 URL パターン'],
+    ['excludes', '対象外 URL パターン'],
+    ['caseInsensitiveUrls', 'URL の大文字/小文字を区別'],
+    ['archived', '削除済'],
+    ['createdAt', '作成日'],
+    ['modifiedAt', '更新日'],
+  ]
 
-  function $th8$var$saveBlob(blob, fileName) {
-    const url = URL.createObjectURL(blob)
-    $('<a/>')
-      .attr('download', fileName)
-      .prop('href', url)
-      .appendTo('body')
-      .each((_, a) => a.click())
-      .remove()
-    URL.revokeObjectURL(url)
-  }
-
-  function $th8$var$createExcelCsvBlob(rows) {
-    const value = $th8$var$csvStringify(rows)
-    const bom = new Uint8Array([0xef, 0xbb, 0xbf])
-    return new Blob([bom, value], {
-      type: 'text/csv',
+  async function $pM$var$exportPage() {
+    const resources = [$LVu9$export$getPages()]
+    const modal = $hR3q$export$ProgressModal.open({
+      maxValue: resources.length,
     })
+    const [pages] = await $YOq$export$waitAll(resources, () => modal.increment())
+    const rows = pages.map(item => {
+      var _item$urlPatterns, _item$urlPatterns$inc, _item$urlPatterns2, _item$urlPatterns2$ex
+
+      item.includes =
+        (_item$urlPatterns = item.urlPatterns) === null || _item$urlPatterns === void 0
+          ? void 0
+          : (_item$urlPatterns$inc = _item$urlPatterns.includes) === null || _item$urlPatterns$inc === void 0
+          ? void 0
+          : _item$urlPatterns$inc
+              .map(o => {
+                var _o$pattern
+
+                return (_o$pattern = o.pattern) !== null && _o$pattern !== void 0 ? _o$pattern : ''
+              })
+              .join('\n')
+      item.excludes =
+        (_item$urlPatterns2 = item.urlPatterns) === null || _item$urlPatterns2 === void 0
+          ? void 0
+          : (_item$urlPatterns2$ex = _item$urlPatterns2.excludes) === null || _item$urlPatterns2$ex === void 0
+          ? void 0
+          : _item$urlPatterns2$ex
+              .map(o => {
+                var _o$pattern2
+
+                return (_o$pattern2 = o.pattern) !== null && _o$pattern2 !== void 0 ? _o$pattern2 : ''
+              })
+              .join('\n')
+      item.createdAt = $XZPv$$interop$default.d(item.createdAt).format('llll')
+      item.modifiedAt = $XZPv$$interop$default.d(item.modifiedAt).format('llll')
+      return [...$pM$var$columns.map(column => item[column[0]])]
+    })
+    const header = $pM$var$columns.map(c => c[1])
+    rows.unshift(header)
+    $th8$export$saveAsCsv(rows, 'ページ一覧')
   }
 
-  function $th8$var$csvStringify(rows) {
-    return rows.map(cells => cells.map($th8$var$quoteForCsv).join(',')).join('\r\n')
+  function $pM$export$registerPageExporter() {
+    GM_registerMenuCommand('ページをエクスポート', $pM$var$exportPage)
   }
 
-  function $th8$var$quoteForCsv(value) {
-    var _value
+  const $GzEd$var$itemProps = [
+    'id',
+    'order',
+    'name',
+    'description',
+    'url',
+    'scriptContents',
+    'tagIds',
+    'tagNames',
+    'pageIds',
+    'pageNames',
+  ]
+  const $GzEd$var$header = [
+    'ID',
+    '実行順序',
+    '名前',
+    '説明',
+    'URL',
+    'コード',
+    '依存タグ ID',
+    '依存タグ名',
+    '依存ページ ID',
+    '依存ページ名',
+  ]
 
-    return `"${String((_value = value) !== null && _value !== void 0 ? _value : '').replace(/"/g, '""')}"`
+  async function $GzEd$var$exportScript() {
+    const resources = [$LVu9$export$getPages(), $LVu9$export$getTags(), $LVu9$export$getScripts()]
+    const modal = $hR3q$export$ProgressModal.open({
+      maxValue: resources.length,
+    })
+    const [pages, tags, scripts] = await $YOq$export$waitAll(resources, () => modal.increment())
+    const pageById = $YOq$export$arrayToMapByItemId(pages)
+    const tagById = $YOq$export$arrayToMapByItemId(tags)
+    const rows = scripts.map(item => {
+      var _item$tagsId, _item$pagesId
+
+      const tagIds =
+        ((_item$tagsId = item.tagsId) === null || _item$tagsId === void 0
+          ? void 0
+          : _item$tagsId.filter(id => id in tagById)) || []
+      const pageIds =
+        ((_item$pagesId = item.pagesId) === null || _item$pagesId === void 0
+          ? void 0
+          : _item$pagesId.filter(id => id in pageById)) || []
+      item.tagIds = tagIds.join('\n')
+      item.pageIds = pageIds.join('\n')
+      item.tagNames = tagIds
+        .map(id => {
+          var _tagById$id
+
+          return (_tagById$id = tagById[id]) === null || _tagById$id === void 0 ? void 0 : _tagById$id.name
+        })
+        .join('\n')
+      item.pageNames = pageIds
+        .map(id => {
+          var _pageById$id
+
+          return (_pageById$id = pageById[id]) === null || _pageById$id === void 0 ? void 0 : _pageById$id.name
+        })
+        .join('\n')
+      return [...$GzEd$var$itemProps.map(k => item[k])]
+    })
+    rows.unshift($GzEd$var$header)
+    $th8$export$saveAsCsv(rows, 'スクリプト一覧')
+  }
+
+  function $GzEd$export$registerScriptExporter() {
+    GM_registerMenuCommand('スクリプトをエクスポート', $GzEd$var$exportScript)
   }
 
   const $Fbc$var$tagProps = [
@@ -812,93 +955,6 @@
     GM_registerMenuCommand('タグをエクスポート', $Fbc$var$exportTag)
   }
 
-  const $LVu9$var$baseUrl = location.pathname
-    .split('/')
-    .slice(0, 3)
-    .join('/')
-
-  async function $LVu9$export$getPages() {
-    return $.get(`${$LVu9$var$baseUrl}/pages-json`)
-  }
-
-  async function $LVu9$export$getTags() {
-    return $.get(`${$LVu9$var$baseUrl}/tags`)
-  }
-
-  async function $LVu9$export$getScripts() {
-    return $.get(`${$LVu9$var$baseUrl}/libraries-json`)
-  }
-
-  const $GzEd$var$itemProps = [
-    'id',
-    'order',
-    'name',
-    'description',
-    'url',
-    'scriptContents',
-    'tagIds',
-    'tagNames',
-    'pageIds',
-    'pageNames',
-  ]
-  const $GzEd$var$header = [
-    'ID',
-    '実行順序',
-    '名前',
-    '説明',
-    'URL',
-    'コード',
-    '依存タグ ID',
-    '依存タグ名',
-    '依存ページ ID',
-    '依存ページ名',
-  ]
-
-  async function $GzEd$var$exportScript() {
-    const resources = [$LVu9$export$getPages(), $LVu9$export$getTags(), $LVu9$export$getScripts()]
-    const modal = $hR3q$export$ProgressModal.open({
-      maxValue: resources.length,
-    })
-    const [pages, tags, scripts] = await $YOq$export$waitAll(resources, () => modal.increment())
-    const pageById = $YOq$export$arrayToMapByItemId(pages)
-    const tagById = $YOq$export$arrayToMapByItemId(tags)
-    const rows = scripts.map(item => {
-      var _item$tagsId, _item$pagesId
-
-      const tagIds =
-        ((_item$tagsId = item.tagsId) === null || _item$tagsId === void 0
-          ? void 0
-          : _item$tagsId.filter(id => id in tagById)) || []
-      const pageIds =
-        ((_item$pagesId = item.pagesId) === null || _item$pagesId === void 0
-          ? void 0
-          : _item$pagesId.filter(id => id in pageById)) || []
-      item.tagIds = tagIds.join('\n')
-      item.pageIds = pageIds.join('\n')
-      item.tagNames = tagIds
-        .map(id => {
-          var _tagById$id
-
-          return (_tagById$id = tagById[id]) === null || _tagById$id === void 0 ? void 0 : _tagById$id.name
-        })
-        .join('\n')
-      item.pageNames = pageIds
-        .map(id => {
-          var _pageById$id
-
-          return (_pageById$id = pageById[id]) === null || _pageById$id === void 0 ? void 0 : _pageById$id.name
-        })
-        .join('\n')
-      return [...$GzEd$var$itemProps.map(k => item[k])]
-    })
-    rows.unshift($GzEd$var$header)
-    $th8$export$saveAsCsv(rows, 'スクリプト一覧')
-  }
-
-  function $GzEd$export$registerScriptExporter() {
-    GM_registerMenuCommand('スクリプトをエクスポート', $GzEd$var$exportScript)
-  }
-
   {
   }
   // https://control.theyjtag.jp/sites/*/tags
@@ -908,5 +964,6 @@
     $Fbc$export$registerTagExporter()
   }
 
+  $pM$export$registerPageExporter()
   $GzEd$export$registerScriptExporter()
 })()
