@@ -1,5 +1,3 @@
-/* global $:false */
-
 export class Modal {
   constructor(options) {
     const html = `

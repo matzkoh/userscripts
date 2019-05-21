@@ -2,7 +2,7 @@
   // ==UserScript==
   // @name         YTM Exporter
   // @namespace    https://github.com/matzkoh
-  // @version      1.3.0
+  // @version      1.4.0
   // @description  Export to excel for YTM console
   // @author       matzkoh
   // @include      https://control.theyjtag.jp/sites/*
@@ -10,6 +10,7 @@
   // ==/UserScript==
 }
 
+import { registerDataExporter } from './exporter/data'
 import { registerPageExporter } from './exporter/page'
 import { registerScriptExporter } from './exporter/script'
 import { registerTagExporter } from './exporter/tag'
@@ -20,5 +21,6 @@ if (/^\/sites\/[^/]+\/(?:tags|pages\/[^/]+\/tag-assignments)$/.test(location.pat
   registerTagExporter()
 }
 
+registerDataExporter()
 registerPageExporter()
 registerScriptExporter()

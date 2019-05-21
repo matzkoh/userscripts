@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YTM Exporter
 // @namespace    https://github.com/matzkoh
-// @version      1.3.0
+// @version      1.4.0
 // @description  Export to excel for YTM console
 // @author       matzkoh
 // @include      https://control.theyjtag.jp/sites/*
@@ -572,6 +572,30 @@
     return $.get(`${$LVu9$var$baseUrl}/tags/${id}/page-assignments`)
   }
 
+  async function $LVu9$export$getDataList() {
+    return $.get(`${$LVu9$var$baseUrl}/data`)
+  }
+
+  async function $LVu9$export$getDataInputs(id) {
+    const html = await $.get(`${$LVu9$var$baseUrl}/data/${id}/inputs`)
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    return Array.from(doc.querySelectorAll('.view-data > tbody > tr')).map(tr => {
+      var _tr$cells$0$querySele, _tr$cells$0$querySele2
+
+      return {
+        pageId:
+          (_tr$cells$0$querySele = tr.cells[0].querySelector('a')) === null || _tr$cells$0$querySele === void 0
+            ? void 0
+            : (_tr$cells$0$querySele2 = _tr$cells$0$querySele.href.match(/(?<=\/)\d+(?=\/)/)) === null ||
+              _tr$cells$0$querySele2 === void 0
+            ? void 0
+            : _tr$cells$0$querySele2[0],
+        pageName: tr.cells[0].textContent.trim(),
+        dbe: tr.cells[2].textContent.trim(),
+      }
+    })
+  }
+
   function $th8$export$saveAsCsv(rows, name) {
     const blob = $th8$var$createExcelCsvBlob(rows)
     const date = $XZPv$$interop$default.d().format('YYYYMMDD')
@@ -622,7 +646,6 @@
     return String((_value = value) !== null && _value !== void 0 ? _value : '')
   }
 
-  /* global $:false */
   class $hR3q$export$Modal {
     constructor(options) {
       const html = `
@@ -727,6 +750,45 @@
       this.value += value
       return this.update()
     }
+  }
+
+  const $o$var$columns = [
+    ['id', 'ID'],
+    ['name', '名前'],
+    ['pageId', 'ページ ID'],
+    ['pageName', 'ページ名'],
+    ['dbe', 'データバインディングエクスプレッション'],
+    ['createdAt', '作成日'],
+    ['modifiedAt', '更新日'],
+  ]
+
+  async function $o$var$exportData() {
+    const items = await $LVu9$export$getDataList()
+    const modal = $hR3q$export$ProgressModal.open({
+      maxValue: items.length,
+    })
+    const itemsWithInputs = await Promise.all(
+      items.map(async item => {
+        const inputs = await $LVu9$export$getDataInputs(item.id)
+        modal.increment()
+        return {
+          item,
+          inputs,
+        }
+      }),
+    )
+    const rows = itemsWithInputs.flatMap(({ item, inputs }) => {
+      item.createdAt = $XZPv$$interop$default.d(item.createdAt).format('llll')
+      item.modifiedAt = $XZPv$$interop$default.d(item.modifiedAt).format('llll')
+      return inputs.map(input => [...$o$var$columns.map(([key]) => input[key] || item[key])])
+    })
+    const header = $o$var$columns.map(c => c[1])
+    rows.unshift(header)
+    $th8$export$saveAsCsv(rows, 'カスタムデータエレメント一覧')
+  }
+
+  function $o$export$registerDataExporter() {
+    GM_registerMenuCommand('カスタムデータエレメントをエクスポート', $o$var$exportData)
   }
 
   async function $YOq$export$waitAll(promises, progress) {
@@ -975,6 +1037,7 @@
     $Fbc$export$registerTagExporter()
   }
 
+  $o$export$registerDataExporter()
   $pM$export$registerPageExporter()
   $GzEd$export$registerScriptExporter()
 })()
