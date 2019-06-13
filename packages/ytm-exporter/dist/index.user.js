@@ -997,10 +997,12 @@
         tag.pageIds = pages.map(p => p.id)
         tag.pageNames = pages.map(p => p.name)
         const patterns = pages.map(p => $YOq$export$convertPatterns(p.urlPatterns))
-        tag.includes = ((_patterns$flatMap$sor = patterns.flatMap(item => item.includes).sort()),
-        $YOq$export$unique(_patterns$flatMap$sor))
-        tag.excludes = ((_patterns$flatMap$sor2 = patterns.flatMap(item => item.excludes).sort()),
-        $YOq$export$unique(_patterns$flatMap$sor2))
+        tag.includes =
+          ((_patterns$flatMap$sor = patterns.flatMap(item => item.includes).sort()),
+          $YOq$export$unique(_patterns$flatMap$sor))
+        tag.excludes =
+          ((_patterns$flatMap$sor2 = patterns.flatMap(item => item.excludes).sort()),
+          $YOq$export$unique(_patterns$flatMap$sor2))
         const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
 
         if (tag.defaultTagCategoryName === 'Functional') {
