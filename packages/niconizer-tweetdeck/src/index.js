@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         niconizer-tweetdeck
 // @namespace    https://github.com/matzkoh
-// @version      1.0.0
+// @version      1.1.0
 // @description  Twitter の新着ツイートを niconizer へ連携します
 // @author       matzkoh
 // @include      https://tweetdeck.twitter.com/
@@ -26,9 +26,15 @@ const ws = new Promise(resolve => {
   ws.addEventListener('open', () => resolve(ws))
 })
 
+function escapeHtml(str) {
+  const el = document.createElement('div')
+  el.textContent = str
+  return el.innerHTML
+}
+
 async function sendComment(comment) {
-  console.debug(comment)
-  ;(await ws).send(comment)
+  console.log(comment)
+  escapeHtml(comment) |> (await ws).send
 }
 
 document.addEventListener('click', event => {
