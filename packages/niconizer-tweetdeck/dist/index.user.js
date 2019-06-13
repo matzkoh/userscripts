@@ -29,7 +29,7 @@
   })
 
   async function $Focm$var$sendComment(comment) {
-    console.log(comment)
+    console.debug(comment)
     ;(await $Focm$var$ws).send(comment)
   }
 
@@ -48,18 +48,17 @@
       ? void 0
       : _event$target$closest.classList.toggle('niconizer-watching', isActive)
   })
-
-  const $Focm$var$onMutation = ms => {
-    const addedElements = ms.flatMap(m => Array.from(m.addedNodes)).filter(n => n.nodeType === Node.ELEMENT_NODE)
+  new MutationObserver(mutations => {
+    const addedElements = mutations.flatMap(m => Array.from(m.addedNodes)).filter(n => n.nodeType === Node.ELEMENT_NODE)
     addedElements
-      .filter(el => el.matches('.column'))
+      .filter(el => el.matches('.column:not(.js-simple-column)'))
       .filter(el => el.querySelector('.column-header-links'))
       .filter(el => !el.querySelector('.niconizer-toggle-icon'))
       .forEach($Focm$var$appendToggleIcon)
     addedElements
       .filter(el => el.matches('.column-header, .column-header-links'))
       .filter(el => !el.querySelector('.niconizer-toggle-icon'))
-      .map(el => el.closest('.column'))
+      .map(el => el.closest('.column:not(.js-simple-column)'))
       .filter(Boolean)
       .forEach($Focm$var$appendToggleIcon)
     addedElements
@@ -68,9 +67,7 @@
       .map($Focm$var$getCommentBodyFromTweet)
       .filter(Boolean)
       .forEach($Focm$var$sendComment)
-  }
-
-  new MutationObserver($Focm$var$onMutation).observe(document.body, {
+  }).observe(document.body, {
     childList: true,
     subtree: true,
   })
@@ -89,6 +86,8 @@
   }
 
   function $Focm$var$getCommentBodyFromTweet(el) {
+    var _el$closest, _el$closest$querySele, _el$closest$querySele2
+
     const isRetweet = el.querySelector('.tweet-context')
 
     if (isRetweet) {
@@ -102,17 +101,17 @@
     }
 
     let text = textEl.textContent
-    const input = el.closest('.column').querySelector('.column-title-edit-box')
-
-    if (input) {
-      const tags = input.value.match(/#[^\s()]+/g)
-      tags === null || tags === void 0
-        ? void 0
-        : tags.forEach(tag => {
-            text = text.split(tag).join('')
-          })
-    }
-
+    ;(_el$closest = el.closest('.column')) === null || _el$closest === void 0
+      ? void 0
+      : (_el$closest$querySele = _el$closest.querySelector('.column-title-edit-box')) === null ||
+        _el$closest$querySele === void 0
+      ? void 0
+      : (_el$closest$querySele2 = _el$closest$querySele.value.match(/#[^\s()]+/g)) === null ||
+        _el$closest$querySele2 === void 0
+      ? void 0
+      : _el$closest$querySele2.forEach(hashTag => {
+          text = text.split(hashTag).join('')
+        })
     return text.trim().replace(/\s+/g, ' ')
   }
 })()

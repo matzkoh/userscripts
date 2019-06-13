@@ -27,7 +27,7 @@ const ws = new Promise(resolve => {
 })
 
 async function sendComment(comment) {
-  console.log(comment)
+  console.debug(comment)
   ;(await ws).send(comment)
 }
 
@@ -43,11 +43,11 @@ document.addEventListener('click', event => {
   event.target.closest('.column')?.classList.toggle('niconizer-watching', isActive)
 })
 
-const onMutation = ms => {
-  const addedElements = ms.flatMap(m => Array.from(m.addedNodes)).filter(n => n.nodeType === Node.ELEMENT_NODE)
+new MutationObserver(mutations => {
+  const addedElements = mutations.flatMap(m => Array.from(m.addedNodes)).filter(n => n.nodeType === Node.ELEMENT_NODE)
 
   addedElements
-    .filter(el => el.matches('.column'))
+    .filter(el => el.matches('.column:not(.js-simple-column)'))
     .filter(el => el.querySelector('.column-header-links'))
     .filter(el => !el.querySelector('.niconizer-toggle-icon'))
     .forEach(appendToggleIcon)
@@ -55,7 +55,7 @@ const onMutation = ms => {
   addedElements
     .filter(el => el.matches('.column-header, .column-header-links'))
     .filter(el => !el.querySelector('.niconizer-toggle-icon'))
-    .map(el => el.closest('.column'))
+    .map(el => el.closest('.column:not(.js-simple-column)'))
     .filter(Boolean)
     .forEach(appendToggleIcon)
 
@@ -65,9 +65,7 @@ const onMutation = ms => {
     .map(getCommentBodyFromTweet)
     .filter(Boolean)
     .forEach(sendComment)
-}
-
-new MutationObserver(onMutation).observe(document.body, { childList: true, subtree: true })
+}).observe(document.body, { childList: true, subtree: true })
 
 function appendToggleIcon(column) {
   const buttonContainer = column.querySelector('.column-header-links')
@@ -95,13 +93,12 @@ function getCommentBodyFromTweet(el) {
 
   let text = textEl.textContent
 
-  const input = el.closest('.column').querySelector('.column-title-edit-box')
-  if (input) {
-    const tags = input.value.match(/#[^\s()]+/g)
-    tags?.forEach(tag => {
-      text = text.split(tag).join('')
+  el.closest('.column')
+    ?.querySelector('.column-title-edit-box')
+    ?.value.match(/#[^\s()]+/g)
+    ?.forEach(hashTag => {
+      text = text.split(hashTag).join('')
     })
-  }
 
   return text.trim().replace(/\s+/g, ' ')
 }
