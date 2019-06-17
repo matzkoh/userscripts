@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YTM Exporter
 // @namespace    https://github.com/matzkoh
-// @version      1.4.0
+// @version      1.4.1
 // @description  Export to excel for YTM console
 // @author       matzkoh
 // @include      https://control.theyjtag.jp/sites/*
@@ -1005,7 +1005,7 @@
           $YOq$export$unique(_patterns$flatMap$sor2))
         const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
 
-        if (tag.defaultTagCategoryName === 'Functional') {
+        if (tag.tagDefinitionId === 'custom_markup_parsing_tag') {
           tag.tag = fields.markup
         } else {
           tag.catalog = fields

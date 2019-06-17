@@ -40,7 +40,7 @@ async function exportTag() {
       tag.includes = patterns.flatMap(item => item.includes).sort() |> unique
       tag.excludes = patterns.flatMap(item => item.excludes).sort() |> unique
       const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
-      if (tag.defaultTagCategoryName === 'Functional') {
+      if (tag.tagDefinitionId === 'custom_markup_parsing_tag') {
         tag.tag = fields.markup
       } else {
         tag.catalog = fields
