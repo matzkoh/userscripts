@@ -2,7 +2,7 @@
   "name": "niconizer-tweetdeck",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "7.4.5"
+    "@babel/core": "7.5.0"
   },
   "engines": {
     "node": ">= 10",
