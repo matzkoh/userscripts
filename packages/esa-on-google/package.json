@@ -2,7 +2,7 @@
   "name": "esa-on-google",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "7.5.0"
+    "@babel/core": "7.5.4"
   },
   "engines": {
     "node": ">= 10",
