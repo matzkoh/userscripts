@@ -1,16 +1,16 @@
 {
   "name": "fix-meta",
   "version": "1.0.0",
-  "license": "MIT",
-  "bin": {
-    "fix-meta": "index.js"
-  },
-  "files": [
-    "index.js"
-  ],
   "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/matzkoh/userscripts.git"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "bin": {
+    "fix-meta": "index.js"
   }
 }

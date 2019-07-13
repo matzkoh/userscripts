@@ -1,21 +1,21 @@
 {
   "name": "add-circleci-workflows-link",
+  "private": true,
   "license": "MIT",
+  "main": "dist/index.user.js",
+  "scripts": {
+    "prebuild": "run-s lint clean",
+    "build": "parcel build src/index.js -o index.user.js --no-autoinstall --no-minify --no-content-hash --no-source-maps --experimental-scope-hoisting",
+    "postbuild": "fix-meta \"dist/**/*.user.js\" && prettier --write \"dist/**/*.user.js\"",
+    "clean": "rimraf dist",
+    "lint": "eslint . --ignore-path ../../.eslintignore",
+    "watch": "parcel watch src/index.js -o index.user.js"
+  },
   "devDependencies": {
     "@babel/core": "7.5.4"
   },
   "engines": {
     "node": ">= 10",
     "npm": ">= 6.4"
-  },
-  "main": "dist/index.user.js",
-  "private": true,
-  "scripts": {
-    "clean": "rimraf dist",
-    "lint": "eslint . --ignore-path ../../.eslintignore",
-    "prebuild": "run-s lint clean",
-    "build": "parcel build src/index.js -o index.user.js --no-autoinstall --no-minify --no-content-hash --no-source-maps --experimental-scope-hoisting",
-    "postbuild": "fix-meta \"dist/**/*.user.js\" && prettier --write \"dist/**/*.user.js\"",
-    "watch": "parcel watch src/index.js -o index.user.js"
   }
 }
