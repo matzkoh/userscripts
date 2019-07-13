@@ -3,12 +3,4 @@ module.exports = {
   semi: false,
   singleQuote: true,
   trailingComma: 'all',
-  overrides: [
-    {
-      files: 'package.json',
-      options: {
-        parser: 'package-json',
-      },
-    },
-  ],
 }

@@ -1,5 +1,11 @@
 {
   "name": "userscripts",
+  "private": true,
+  "scripts": {
+    "all": "lerna run",
+    "install": "lerna bootstrap",
+    "test": "lerna run build"
+  },
   "devDependencies": {
     "@babel/core": "7.5.4",
     "@babel/plugin-proposal-do-expressions": "7.5.0",
@@ -30,11 +36,5 @@
   "engines": {
     "node": ">= 10",
     "npm": ">= 6.4"
-  },
-  "private": true,
-  "scripts": {
-    "install": "lerna bootstrap",
-    "all": "lerna run",
-    "test": "lerna run build"
   }
 }
