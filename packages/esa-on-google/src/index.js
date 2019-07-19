@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         esa on Google
 // @namespace    https://github.com/matzkoh
-// @version      1.0.0
+// @version      1.0.1
 // @description  show esa search result on google search
 // @author       matzkoh
 // @include      https://www.google.tld/search?*
@@ -49,7 +49,7 @@ content.innerHTML = `
 content.querySelector('.eog-no-post').textContent = `${queryString} にマッチする esa 記事は見つかりませんでした`
 content.querySelector('.eog-btn-token').addEventListener('click', () => {
   const token = prompt('/user/applications で発行した Personal access token', '')
-  if (token?.length === 64) {
+  if (token?.length) {
     GM_setValue('esa_token', token)
     location.reload()
   }
