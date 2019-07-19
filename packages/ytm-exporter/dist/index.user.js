@@ -106,7 +106,7 @@
         },
         M = function(t, n, e) {
           var r
-          if (!t) return null
+          if (!t) return l
           if ('string' == typeof t) m[t] && (r = t), n && ((m[t] = n), (r = t))
           else {
             var i = t.name
@@ -139,7 +139,7 @@
 
       var v = (function() {
         function c(t) {
-          ;(this.$L = this.$L || M(t.locale, null, !0) || l), this.parse(t)
+          ;(this.$L = this.$L || M(t.locale, null, !0)), this.parse(t)
         }
 
         var d = c.prototype
