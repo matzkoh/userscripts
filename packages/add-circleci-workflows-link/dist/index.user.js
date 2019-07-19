@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Add CircleCI Workflows Link
 // @namespace    https://github.com/matzkoh
-// @version      1.0.0
+// @version      1.0.1
 // @description  現在のブランチにおける CircleCI Workflows ページへのリンクを追加する
 // @author       matzkoh
 // @include      https://github.com/*
@@ -62,6 +62,7 @@
     const btn = document.createElement('a')
     btn.textContent = 'CircleCI Workflows'
     btn.href = `https://circleci.com/gh/${userName}/workflows/${repoName}/tree/${branchName}`
+    btn.target = '_blank'
     btn.style.display = 'inline-block'
     btn.style.height = '20px'
     btn.style.lineHeight = '20px'
