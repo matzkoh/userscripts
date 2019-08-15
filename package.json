@@ -28,7 +28,7 @@
     "parcel": "1.12.3",
     "prettier": "1.18.2",
     "prettier-plugin-packagejson": "2.0.1",
-    "rimraf": "2.6.3",
+    "rimraf": "2.7.1",
     "stylelint": "10.1.0",
     "stylelint-config-recess-order": "2.0.3",
     "stylelint-config-strict-scss": "0.5.0"
