@@ -7,7 +7,7 @@
     "test": "lerna run build"
   },
   "devDependencies": {
-    "@babel/core": "7.6.0",
+    "@babel/core": "7.6.2",
     "@babel/plugin-proposal-do-expressions": "7.6.0",
     "@babel/plugin-proposal-function-bind": "7.2.0",
     "@babel/plugin-proposal-logical-assignment-operators": "7.2.0",
