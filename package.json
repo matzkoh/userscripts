@@ -19,7 +19,7 @@
     "babel-eslint": "10.0.3",
     "dayjs": "1.8.18",
     "eslint": "6.8.0",
-    "eslint-config-prettier": "6.8.0",
+    "eslint-config-prettier": "6.9.0",
     "eslint-plugin-prettier": "3.1.2",
     "fix-meta": "file:packages/fix-meta",
     "glob": "7.1.6",
