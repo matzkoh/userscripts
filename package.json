@@ -23,7 +23,7 @@
     "eslint-plugin-prettier": "3.1.2",
     "fix-meta": "file:packages/fix-meta",
     "glob": "7.1.6",
-    "lerna": "3.20.0",
+    "lerna": "3.20.1",
     "npm-run-all": "4.1.5",
     "parcel": "1.12.4",
     "prettier": "1.19.1",
