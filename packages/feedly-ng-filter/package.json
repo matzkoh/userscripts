@@ -12,7 +12,7 @@
     "watch": "parcel watch src/index.js -o index.user.js"
   },
   "devDependencies": {
-    "@babel/core": "7.9.6"
+    "@babel/core": "7.10.1"
   },
   "engines": {
     "node": ">= 10",
