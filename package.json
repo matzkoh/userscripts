@@ -7,13 +7,13 @@
     "test": "lerna run build"
   },
   "devDependencies": {
-    "@babel/core": "7.12.3",
+    "@babel/core": "7.12.7",
     "@babel/plugin-proposal-do-expressions": "7.12.1",
     "@babel/plugin-proposal-function-bind": "7.12.1",
     "@babel/plugin-proposal-logical-assignment-operators": "7.12.1",
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.12.1",
-    "@babel/plugin-proposal-numeric-separator": "7.12.5",
-    "@babel/plugin-proposal-optional-chaining": "7.12.1",
+    "@babel/plugin-proposal-numeric-separator": "7.12.7",
+    "@babel/plugin-proposal-optional-chaining": "7.12.7",
     "@babel/plugin-proposal-pipeline-operator": "7.12.1",
     "@babel/plugin-proposal-throw-expressions": "7.12.1",
     "babel-eslint": "10.1.0",
