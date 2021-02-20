@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['stylelint-config-strict-scss', 'stylelint-config-recess-order'],
+  extends: ['@wemake-services/stylelint-config-scss', 'stylelint-config-recess-order'],
   rules: {
     'color-format/format': null,
     'font-weight-notation': null,
