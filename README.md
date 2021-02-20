@@ -1,6 +1,9 @@
-# userscripts
+[![renovate-badge]][renovate]
 
-[![Renovate](https://badges.renovateapi.com/github/matzkoh/userscripts)](https://renovatebot.com/)
+[renovate-badge]: https://img.shields.io/badge/renovate-enabled-brightgreen
+[renovate]: https://renovatebot.com/
+
+# userscripts
 
 [Tampermonkey](https://tampermonkey.net/) scripts.
 
