@@ -11,7 +11,7 @@
 // @noframes
 // ==/UserScript==
 
-;(function() {
+;(function () {
   // ASSET: index.js
   GM_registerMenuCommand(`[niconizer]: Set server URL`, () => {
     const currentValue = GM_getValue('wsUrl', 'ws://localhost:25252/')
@@ -35,15 +35,10 @@
   }
 
   async function $Focm$var$sendComment(comment) {
-    var _escapeHtml
-
-    console.log(comment)
-    ;(_escapeHtml = $Focm$var$escapeHtml(comment)), (await $Focm$var$ws).send(_escapeHtml)
+    ;(await $Focm$var$ws).send($Focm$var$escapeHtml(comment))
   }
 
   document.addEventListener('click', event => {
-    var _event$target$closest
-
     const icon = event.target.closest('.niconizer-toggle-icon')
 
     if (!icon) {
@@ -52,9 +47,7 @@
 
     const isActive = icon.classList.toggle('icon-toggle-on')
     icon.classList.toggle('icon-toggle-off')
-    ;(_event$target$closest = event.target.closest('.column')) === null || _event$target$closest === void 0
-      ? void 0
-      : _event$target$closest.classList.toggle('niconizer-watching', isActive)
+    event.target.closest('.column')?.classList.toggle('niconizer-watching', isActive)
   })
   new MutationObserver(mutations => {
     const addedElements = mutations.flatMap(m => Array.from(m.addedNodes)).filter(n => n.nodeType === Node.ELEMENT_NODE)
@@ -94,8 +87,6 @@
   }
 
   function $Focm$var$getCommentBodyFromTweet(el) {
-    var _el$closest, _el$closest$querySele, _el$closest$querySele2
-
     const isRetweet = el.querySelector('.tweet-context')
 
     if (isRetweet) {
@@ -109,17 +100,12 @@
     }
 
     let text = textEl.textContent
-    ;(_el$closest = el.closest('.column')) === null || _el$closest === void 0
-      ? void 0
-      : (_el$closest$querySele = _el$closest.querySelector('.column-title-edit-box')) === null ||
-        _el$closest$querySele === void 0
-      ? void 0
-      : (_el$closest$querySele2 = _el$closest$querySele.value.match(/#[^\s()]+/g)) === null ||
-        _el$closest$querySele2 === void 0
-      ? void 0
-      : _el$closest$querySele2.forEach(hashTag => {
-          text = text.split(hashTag).join('')
-        })
+    el.closest('.column')
+      ?.querySelector('.column-title-edit-box')
+      ?.value.match(/#[^\s()]+/g)
+      ?.forEach(hashTag => {
+        text = text.split(hashTag).join('')
+      })
     return text.trim().replace(/\s+/g, ' ')
   }
 })()

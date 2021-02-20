@@ -70,13 +70,11 @@ export class ProgressModal extends Modal {
       fontSize: '4vw',
     })
 
-    this.progress = $('<progress/>')
-      .attr('max', this.options.maxValue)
-      .css({
-        width: '50vw',
-        height: '2vw',
-        backgroundColor: 'transparent',
-      })
+    this.progress = $('<progress/>').attr('max', this.options.maxValue).css({
+      width: '50vw',
+      height: '2vw',
+      backgroundColor: 'transparent',
+    })
 
     this.body
       .css({

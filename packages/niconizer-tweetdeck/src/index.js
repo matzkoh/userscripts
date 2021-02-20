@@ -33,8 +33,7 @@ function escapeHtml(str) {
 }
 
 async function sendComment(comment) {
-  console.log(comment)
-  escapeHtml(comment) |> (await ws).send
+  ;(await ws).send(escapeHtml(comment))
 }
 
 document.addEventListener('click', event => {

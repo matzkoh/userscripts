@@ -17,9 +17,9 @@
 // @grant          GM_log
 // ==/UserScript==
 
-;(function() {
+;(function () {
   // ASSET: index.js
-  var $Focm$exports = function() {
+  var $Focm$exports = function () {
     var exports = this
     var module = {
       exports: this,
@@ -192,7 +192,7 @@
 
       static parse(text) {
         return JSON.parse(text, (key, value) => {
-          if (value === null || value === void 0 ? void 0 : value.__serialized__) {
+          if (value?.__serialized__) {
             switch (value.class) {
               case 'RegExp':
                 return new RegExp(...value.args)
@@ -274,13 +274,9 @@
             try {
               EventEmitter.applyListener(this, listener, event)
             } catch (e) {
-              setTimeout(
-                () =>
-                  (function(e) {
-                    throw e
-                  })(e),
-                0,
-              )
+              setTimeout(() => {
+                throw e
+              }, 0)
             }
           })
         }
@@ -446,7 +442,7 @@
       }
 
       load(str) {
-        str || (str = GM_getValue(Preference.prefName, Preference.defaultPref || '({})'))
+        str ||= GM_getValue(Preference.prefName, Preference.defaultPref || '({})')
         let obj
 
         try {
@@ -471,11 +467,8 @@
       }
 
       write() {
-        var _ref, _this$dict
-
         this.dict.__version__ = GM_info.script.version
-        ;(_ref = ((_this$dict = this.dict), Serializer.stringify.call(Serializer, _this$dict))),
-          GM_setValue(Preference.prefName, _ref)
+        GM_setValue(Preference.prefName, Serializer.stringify(this.dict))
       }
 
       autosave() {
@@ -483,7 +476,7 @@
           return
         }
 
-        window.addEventListener('unload', this.write.bind(this), false)
+        window.addEventListener('unload', () => this.write(), false)
         this.autosaveReserved = true
       }
 
@@ -567,8 +560,6 @@
       }
 
       onmousedown(event) {
-        var _this$element$querySe
-
         if (event.button !== 0) {
           return
         }
@@ -578,9 +569,7 @@
         }
 
         event.preventDefault()
-        ;(_this$element$querySe = this.element.querySelector(':focus')) === null || _this$element$querySe === void 0
-          ? void 0
-          : _this$element$querySe.blur()
+        this.element.querySelector(':focus')?.blur()
         this.offsetX = event.pageX - this.element.offsetLeft
         this.offsetY = event.pageY - this.element.offsetTop
         document.addEventListener('mousemove', this, true, false)
@@ -604,14 +593,9 @@
 
     class Filter {
       constructor(filter = {}) {
-        var _filter$children
-
         this.name = filter.name || ''
         this.regexp = { ...filter.regexp }
-        this.children =
-          ((_filter$children = filter.children) === null || _filter$children === void 0
-            ? void 0
-            : _filter$children.map(f => new Filter(f))) || []
+        this.children = filter.children?.map(f => new Filter(f)) || []
         this.hitcount = filter.hitcount || 0
         this.lasthit = filter.lasthit || 0
       }
@@ -684,13 +668,7 @@
       }
 
       get url() {
-        var _this$data$alternate, _this$data$alternate$
-
-        return (_this$data$alternate = this.data.alternate) === null || _this$data$alternate === void 0
-          ? void 0
-          : (_this$data$alternate$ = _this$data$alternate[0]) === null || _this$data$alternate$ === void 0
-          ? void 0
-          : _this$data$alternate$.href
+        return this.data.alternate?.[0]?.href
       }
 
       get sourceTitle() {
@@ -702,9 +680,7 @@
       }
 
       get body() {
-        var _ref2
-
-        return (_ref2 = this.data.content || this.data.summary) === null || _ref2 === void 0 ? void 0 : _ref2.content
+        return (this.data.content || this.data.summary)?.content
       }
 
       get author() {
@@ -724,13 +700,7 @@
       }
 
       get keywords() {
-        var _this$data$keywords
-
-        return (
-          ((_this$data$keywords = this.data.keywords) === null || _this$data$keywords === void 0
-            ? void 0
-            : _this$data$keywords.join(',')) || ''
-        )
+        return this.data.keywords?.join(',') || ''
       }
 
       get unread() {
@@ -765,8 +735,8 @@
         <div class="fngf-panel-body fngf-column" ref="body"></div>
         <div class="fngf-panel-buttons fngf-row" ref="buttons">
           <div class="fngf-btn-group fngf-row">
-            <button type="button" class="fngf-btn" @click="${this.apply.bind(this)}">${__`OK`}</button>
-            <button type="button" class="fngf-btn" @click="${this.close.bind(this)}">${__`Cancel`}</button>
+            <button type="button" class="fngf-btn" @click="${() => this.apply()}">${__`OK`}</button>
+            <button type="button" class="fngf-btn" @click="${() => this.close()}">${__`Cancel`}</button>
           </div>
         </div>
       </form>
@@ -780,8 +750,6 @@
       }
 
       open(anchorElement) {
-        var _anchorElement, _document$querySelect
-
         if (this.opened) {
           return
         }
@@ -790,11 +758,7 @@
           return
         }
 
-        if (
-          ((_anchorElement = anchorElement) === null || _anchorElement === void 0
-            ? void 0
-            : _anchorElement.nodeType) !== 1
-        ) {
+        if (anchorElement?.nodeType !== 1) {
           anchorElement = null
         }
 
@@ -809,9 +773,7 @@
           this.on('hidden', () => window.removeEventListener('resize', onWindowResize, false))
         }
 
-        ;(_document$querySelect = document.querySelector(':focus')) === null || _document$querySelect === void 0
-          ? void 0
-          : _document$querySelect.blur()
+        document.querySelector(':focus')?.blur()
         const selector = ':not(.feedlyng-panel) > :-webkit-any(button, input, select, textarea, [tabindex])'
         const ctrl = Array.from(this.dom.element.querySelectorAll(selector)).sort(
           (a, b) => (b.tabIndex || 0) < (a.tabIndex || 0),
@@ -984,7 +946,7 @@
         clipboard.on('purge', pasteState)
         pasteState()
         this.dom.buttons.insertBefore(buttons, this.dom.buttons.firstChild)
-        this.on('escape', this.close.bind(this))
+        this.on('escape', () => this.close())
         this.on('showing', this.initContents)
         this.on('apply', this)
         this.on('hidden', () => {
@@ -1023,9 +985,7 @@
         <label for="${randomId}">${labelText}</label>
         <input type="text" class="fngf-panel-terms-textbox" id="${randomId}" autocomplete="off" name="regexp.${type}.source" value="${sourceValue}">
         <label class="fngf-checkbox fngf-row" title="${__`Ignore Case`}">
-          <input type="checkbox" name="regexp.${type}.ignoreCase" bool:checked="${
-            reg === null || reg === void 0 ? void 0 : reg.ignoreCase
-          }">
+          <input type="checkbox" name="regexp.${type}.ignoreCase" bool:checked="${reg?.ignoreCase}">
           <span class="fngf-btn" tabindex="0">i</span>
         </label>
       `)
@@ -1226,7 +1186,7 @@
   </menu>
 `
     MenuCommand.contextmenu = contextmenu
-    pref.on('change', function({ key, newValue }) {
+    pref.on('change', function ({ key, newValue }) {
       switch (key) {
         case 'filter':
           if (!(newValue instanceof Filter)) {
@@ -1320,12 +1280,7 @@
         }
 
         if (!target.closest('.fngf-dropdown')) {
-          var _document$querySelect2
-
-          ;(_document$querySelect2 = document.querySelector('.fngf-dropdown.active')) === null ||
-          _document$querySelect2 === void 0
-            ? void 0
-            : _document$querySelect2.classList.remove('active')
+          document.querySelector('.fngf-dropdown.active')?.classList.remove('active')
         }
       },
       true,
@@ -1334,11 +1289,7 @@
       'click',
       ({ target }) => {
         if (target.closest('.fngf-dropdown-menu-item')) {
-          var _target$closest
-
-          ;(_target$closest = target.closest('.fngf-dropdown')) === null || _target$closest === void 0
-            ? void 0
-            : _target$closest.classList.remove('active')
+          target.closest('.fngf-dropdown')?.classList.remove('active')
         }
       },
       true,
@@ -1442,10 +1393,10 @@
     function xhr(details) {
       const opt = { ...details }
       const { data } = opt
-      opt.method || (opt.method = data ? 'POST' : 'GET')
+      opt.method ||= data ? 'POST' : 'GET'
 
       if (data instanceof Object) {
-        opt.headers || (opt.headers = {})
+        opt.headers ||= {}
         opt.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8'
         opt.data = Object.entries(data)
           .map(kv => kv.map(encodeURIComponent).join('='))
@@ -1480,14 +1431,14 @@
         panel.on('apply', () => pref.set('language', select.value))
         panel.open()
       })
-      MenuCommand.register(`${__`Import Configuration`}...`, pref.importFromFile.bind(pref))
-      MenuCommand.register(__`Export Configuration`, pref.exportToFile.bind(pref))
+      MenuCommand.register(`${__`Import Configuration`}...`, () => pref.importFromFile())
+      MenuCommand.register(__`Export Configuration`, () => pref.exportToFile())
     }
 
     function sendJSON(details) {
       const opt = { ...details }
       const { data } = opt
-      opt.headers || (opt.headers = {})
+      opt.headers ||= {}
       opt.method = 'POST'
       opt.headers['Content-Type'] = 'application/json; charset=utf-8'
       opt.data = JSON.stringify(data)
@@ -1575,11 +1526,7 @@
 
     async function openFilePicker(multiple) {
       return new Promise(resolve => {
-        const input = $el`<input type="file" @change="${() => {
-          var _ref3, _input$files
-
-          return (_ref3 = ((_input$files = input.files), Array.from(_input$files))), resolve(_ref3)
-        }}">`.first
+        const input = $el`<input type="file" @change="${() => resolve(Array.from(input.files))}">`.first
         input.multiple = multiple
         input.click()
       })
@@ -1601,7 +1548,7 @@
           const n = new Notification(options.title, options)
 
           if (options.autoClose) {
-            setTimeout(n.close.bind(n), options.autoClose)
+            setTimeout(() => n.close(), options.autoClose)
           }
 
           resolve(n)
@@ -1617,7 +1564,7 @@
     module.exports = $Focm$exports
   } else if (typeof define === 'function' && define.amd) {
     // RequireJS
-    define(function() {
+    define(function () {
       return $Focm$exports
     })
   }

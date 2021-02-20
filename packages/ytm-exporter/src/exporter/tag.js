@@ -37,8 +37,8 @@ async function exportTag() {
       tag.pageIds = pages.map(p => p.id)
       tag.pageNames = pages.map(p => p.name)
       const patterns = pages.map(p => convertPatterns(p.urlPatterns))
-      tag.includes = patterns.flatMap(item => item.includes).sort() |> unique
-      tag.excludes = patterns.flatMap(item => item.excludes).sort() |> unique
+      tag.includes = unique(patterns.flatMap(item => item.includes).sort())
+      tag.excludes = unique(patterns.flatMap(item => item.excludes).sort())
       const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
       if (tag.tagDefinitionId === 'custom_markup_parsing_tag') {
         tag.tag = fields.markup

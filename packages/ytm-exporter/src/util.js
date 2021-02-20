@@ -1,5 +1,5 @@
 export async function waitAll(promises, progress) {
-  return promises.map(p => p.then(tap(progress))) |> Promise.all
+  return Promise.all(promises.map(p => p.then(tap(progress))))
 }
 
 export function unique(arr) {
@@ -7,10 +7,7 @@ export function unique(arr) {
 }
 
 export function tap(fn) {
-  return function(arg) {
-    fn(arg)
-    return arg
-  }
+  return arg => (fn(arg), arg)
 }
 
 export function arrayToMapByItemId(arr) {

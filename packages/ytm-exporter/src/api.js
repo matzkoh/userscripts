@@ -1,7 +1,4 @@
-const baseUrl = location.pathname
-  .split('/')
-  .slice(0, 3)
-  .join('/')
+const baseUrl = location.pathname.split('/').slice(0, 3).join('/')
 
 export async function getPages() {
   return $.get(`${baseUrl}/pages-json`)

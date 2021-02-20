@@ -7,9 +7,9 @@
 // @include      https://github.com/*
 // ==/UserScript==
 
-;(function() {
+;(function () {
   // ASSET: index.js
-  var $Focm$exports = function() {
+  var $Focm$exports = function () {
     var exports = this
     var module = {
       exports: this,
@@ -77,7 +77,7 @@
     module.exports = $Focm$exports
   } else if (typeof define === 'function' && define.amd) {
     // RequireJS
-    define(function() {
+    define(function () {
       return $Focm$exports
     })
   }

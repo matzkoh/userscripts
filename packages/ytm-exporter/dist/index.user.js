@@ -8,7 +8,7 @@
 // @grant        GM_registerMenuCommand
 // ==/UserScript==
 
-;(function() {
+;(function () {
   function $parcel$interopDefault(a) {
     return a && a.__esModule
       ? {
@@ -28,424 +28,420 @@
     if ($XZPv$executed) return
     $XZPv$executed = true
     $XZPv$exports = {}
-    !(function(t, n) {
+    !(function (t, e) {
       'object' == typeof $XZPv$exports && 'undefined' != 'object'
-        ? ($XZPv$exports = n())
+        ? ($XZPv$exports = e())
         : 'function' == typeof $XZPv$var$define && $XZPv$var$define.amd
-        ? $XZPv$var$define(n)
-        : (t.dayjs = n())
-    })($XZPv$exports, function() {
+        ? $XZPv$var$define(e)
+        : (t.dayjs = e())
+    })($XZPv$exports, function () {
       var t = 'millisecond',
-        n = 'second',
-        e = 'minute',
+        e = 'second',
+        n = 'minute',
         r = 'hour',
         i = 'day',
         s = 'week',
         u = 'month',
-        o = 'quarter',
-        a = 'year',
-        h = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/,
-        f = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
-        c = function(t, n, e) {
-          var r = String(t)
-          return !r || r.length >= n ? t : '' + Array(n + 1 - r.length).join(e) + t
-        },
+        a = 'quarter',
+        o = 'year',
+        f = 'date',
+        h = /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,
+        c = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
         d = {
-          s: c,
-          z: function(t) {
-            var n = -t.utcOffset(),
-              e = Math.abs(n),
-              r = Math.floor(e / 60),
-              i = e % 60
-            return (n <= 0 ? '+' : '-') + c(r, 2, '0') + ':' + c(i, 2, '0')
+          name: 'en',
+          weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+          months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+        },
+        $ = function (t, e, n) {
+          var r = String(t)
+          return !r || r.length >= e ? t : '' + Array(e + 1 - r.length).join(n) + t
+        },
+        l = {
+          s: $,
+          z: function (t) {
+            var e = -t.utcOffset(),
+              n = Math.abs(e),
+              r = Math.floor(n / 60),
+              i = n % 60
+            return (e <= 0 ? '+' : '-') + $(r, 2, '0') + ':' + $(i, 2, '0')
           },
-          m: function(t, n) {
-            var e = 12 * (n.year() - t.year()) + (n.month() - t.month()),
-              r = t.clone().add(e, u),
-              i = n - r < 0,
-              s = t.clone().add(e + (i ? -1 : 1), u)
-            return Number(-(e + (n - r) / (i ? r - s : s - r)) || 0)
+          m: function t(e, n) {
+            if (e.date() < n.date()) return -t(n, e)
+            var r = 12 * (n.year() - e.year()) + (n.month() - e.month()),
+              i = e.clone().add(r, u),
+              s = n - i < 0,
+              a = e.clone().add(r + (s ? -1 : 1), u)
+            return +(-(r + (n - i) / (s ? i - a : a - i)) || 0)
           },
-          a: function(t) {
+          a: function (t) {
             return t < 0 ? Math.ceil(t) || 0 : Math.floor(t)
           },
-          p: function(h) {
+          p: function (h) {
             return (
               {
                 M: u,
-                y: a,
+                y: o,
                 w: s,
                 d: i,
+                D: f,
                 h: r,
-                m: e,
-                s: n,
+                m: n,
+                s: e,
                 ms: t,
-                Q: o,
+                Q: a,
               }[h] ||
               String(h || '')
                 .toLowerCase()
                 .replace(/s$/, '')
             )
           },
-          u: function(t) {
+          u: function (t) {
             return void 0 === t
           },
         },
-        $ = {
-          name: 'en',
-          weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
-          months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
-        },
-        l = 'en',
-        m = {}
+        y = 'en',
+        M = {}
 
-      m[l] = $
+      M[y] = d
 
-      var y = function(t) {
-          return t instanceof v
+      var m = function (t) {
+          return t instanceof S
         },
-        M = function(t, n, e) {
+        D = function (t, e, n) {
           var r
-          if (!t) return l
-          if ('string' == typeof t) m[t] && (r = t), n && ((m[t] = n), (r = t))
+          if (!t) return y
+          if ('string' == typeof t) M[t] && (r = t), e && ((M[t] = e), (r = t))
           else {
             var i = t.name
-            ;(m[i] = t), (r = i)
+            ;(M[i] = t), (r = i)
           }
-          return e || (l = r), r
+          return !n && r && (y = r), r || (!n && y)
         },
-        g = function(t, n, e) {
-          if (y(t)) return t.clone()
-          var r = n
-            ? 'string' == typeof n
-              ? {
-                  format: n,
-                  pl: e,
-                }
-              : n
-            : {}
-          return (r.date = t), new v(r)
+        v = function (t, e) {
+          if (m(t)) return t.clone()
+          var n = 'object' == typeof e ? e : {}
+          return (n.date = t), (n.args = arguments), new S(n)
         },
-        D = d
+        g = l
 
-      ;(D.l = M),
-        (D.i = y),
-        (D.w = function(t, n) {
-          return g(t, {
-            locale: n.$L,
-            utc: n.$u,
+      ;(g.l = D),
+        (g.i = m),
+        (g.w = function (t, e) {
+          return v(t, {
+            locale: e.$L,
+            utc: e.$u,
+            x: e.$x,
+            $offset: e.$offset,
           })
         })
 
-      var v = (function() {
-        function c(t) {
-          ;(this.$L = this.$L || M(t.locale, null, !0)), this.parse(t)
-        }
+      var S = (function () {
+          function d(t) {
+            ;(this.$L = D(t.locale, null, !0)), this.parse(t)
+          }
 
-        var d = c.prototype
-        return (
-          (d.parse = function(t) {
-            ;(this.$d = (function(t) {
-              var n = t.date,
-                e = t.utc
-              if (null === n) return new Date(NaN)
-              if (D.u(n)) return new Date()
-              if (n instanceof Date) return new Date(n)
+          var $ = d.prototype
+          return (
+            ($.parse = function (t) {
+              ;(this.$d = (function (t) {
+                var e = t.date,
+                  n = t.utc
+                if (null === e) return new Date(NaN)
+                if (g.u(e)) return new Date()
+                if (e instanceof Date) return new Date(e)
 
-              if ('string' == typeof n && !/Z$/i.test(n)) {
-                var r = n.match(h)
-                if (r)
-                  return e
-                    ? new Date(Date.UTC(r[1], r[2] - 1, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, r[7] || 0))
-                    : new Date(r[1], r[2] - 1, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, r[7] || 0)
-              }
+                if ('string' == typeof e && !/Z$/i.test(e)) {
+                  var r = e.match(h)
 
-              return new Date(n)
-            })(t)),
-              this.init()
-          }),
-          (d.init = function() {
-            var t = this.$d
-            ;(this.$y = t.getFullYear()),
-              (this.$M = t.getMonth()),
-              (this.$D = t.getDate()),
-              (this.$W = t.getDay()),
-              (this.$H = t.getHours()),
-              (this.$m = t.getMinutes()),
-              (this.$s = t.getSeconds()),
-              (this.$ms = t.getMilliseconds())
-          }),
-          (d.$utils = function() {
-            return D
-          }),
-          (d.isValid = function() {
-            return !('Invalid Date' === this.$d.toString())
-          }),
-          (d.isSame = function(t, n) {
-            var e = g(t)
-            return this.startOf(n) <= e && e <= this.endOf(n)
-          }),
-          (d.isAfter = function(t, n) {
-            return g(t) < this.startOf(n)
-          }),
-          (d.isBefore = function(t, n) {
-            return this.endOf(n) < g(t)
-          }),
-          (d.$g = function(t, n, e) {
-            return D.u(t) ? this[n] : this.set(e, t)
-          }),
-          (d.year = function(t) {
-            return this.$g(t, '$y', a)
-          }),
-          (d.month = function(t) {
-            return this.$g(t, '$M', u)
-          }),
-          (d.day = function(t) {
-            return this.$g(t, '$W', i)
-          }),
-          (d.date = function(t) {
-            return this.$g(t, '$D', 'date')
-          }),
-          (d.hour = function(t) {
-            return this.$g(t, '$H', r)
-          }),
-          (d.minute = function(t) {
-            return this.$g(t, '$m', e)
-          }),
-          (d.second = function(t) {
-            return this.$g(t, '$s', n)
-          }),
-          (d.millisecond = function(n) {
-            return this.$g(n, '$ms', t)
-          }),
-          (d.unix = function() {
-            return Math.floor(this.valueOf() / 1e3)
-          }),
-          (d.valueOf = function() {
-            return this.$d.getTime()
-          }),
-          (d.startOf = function(t, o) {
-            var h = this,
-              f = !!D.u(o) || o,
-              c = D.p(t),
-              d = function(t, n) {
-                var e = D.w(h.$u ? Date.UTC(h.$y, n, t) : new Date(h.$y, n, t), h)
-                return f ? e : e.endOf(i)
-              },
-              $ = function(t, n) {
-                return D.w(h.toDate()[t].apply(h.toDate(), (f ? [0, 0, 0, 0] : [23, 59, 59, 999]).slice(n)), h)
-              },
-              l = this.$W,
-              m = this.$M,
-              y = this.$D,
-              M = 'set' + (this.$u ? 'UTC' : '')
+                  if (r) {
+                    var i = r[2] - 1 || 0,
+                      s = (r[7] || '0').substring(0, 3)
+                    return n
+                      ? new Date(Date.UTC(r[1], i, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, s))
+                      : new Date(r[1], i, r[3] || 1, r[4] || 0, r[5] || 0, r[6] || 0, s)
+                  }
+                }
 
-            switch (c) {
-              case a:
-                return f ? d(1, 0) : d(31, 11)
-
-              case u:
-                return f ? d(1, m) : d(0, m + 1)
-
-              case s:
-                var g = this.$locale().weekStart || 0,
-                  v = (l < g ? l + 7 : l) - g
-                return d(f ? y - v : y + (6 - v), m)
-
-              case i:
-              case 'date':
-                return $(M + 'Hours', 0)
-
-              case r:
-                return $(M + 'Minutes', 1)
-
-              case e:
-                return $(M + 'Seconds', 2)
-
-              case n:
-                return $(M + 'Milliseconds', 3)
-
-              default:
-                return this.clone()
-            }
-          }),
-          (d.endOf = function(t) {
-            return this.startOf(t, !1)
-          }),
-          (d.$set = function(s, o) {
-            var h,
-              f = D.p(s),
-              c = 'set' + (this.$u ? 'UTC' : ''),
-              d = ((h = {}),
-              (h[i] = c + 'Date'),
-              (h.date = c + 'Date'),
-              (h[u] = c + 'Month'),
-              (h[a] = c + 'FullYear'),
-              (h[r] = c + 'Hours'),
-              (h[e] = c + 'Minutes'),
-              (h[n] = c + 'Seconds'),
-              (h[t] = c + 'Milliseconds'),
-              h)[f],
-              $ = f === i ? this.$D + (o - this.$W) : o
-
-            if (f === u || f === a) {
-              var l = this.clone().set('date', 1)
-              l.$d[d]($), l.init(), (this.$d = l.set('date', Math.min(this.$D, l.daysInMonth())).toDate())
-            } else d && this.$d[d]($)
-
-            return this.init(), this
-          }),
-          (d.set = function(t, n) {
-            return this.clone().$set(t, n)
-          }),
-          (d.get = function(t) {
-            return this[D.p(t)]()
-          }),
-          (d.add = function(t, o) {
-            var h,
-              f = this
-            t = Number(t)
-
-            var c = D.p(o),
-              d = function(n) {
-                var e = g(f)
-                return D.w(e.date(e.date() + Math.round(n * t)), f)
-              }
-
-            if (c === u) return this.set(u, this.$M + t)
-            if (c === a) return this.set(a, this.$y + t)
-            if (c === i) return d(1)
-            if (c === s) return d(7)
-            var $ = ((h = {}), (h[e] = 6e4), (h[r] = 36e5), (h[n] = 1e3), h)[c] || 1,
-              l = this.valueOf() + t * $
-            return D.w(l, this)
-          }),
-          (d.subtract = function(t, n) {
-            return this.add(-1 * t, n)
-          }),
-          (d.format = function(t) {
-            var n = this
-            if (!this.isValid()) return 'Invalid Date'
-
-            var e = t || 'YYYY-MM-DDTHH:mm:ssZ',
-              r = D.z(this),
-              i = this.$locale(),
-              s = this.$H,
-              u = this.$m,
-              o = this.$M,
-              a = i.weekdays,
-              h = i.months,
-              c = function(t, r, i, s) {
-                return (t && (t[r] || t(n, e))) || i[r].substr(0, s)
-              },
-              d = function(t) {
-                return D.s(s % 12 || 12, t, '0')
-              },
-              $ =
-                i.meridiem ||
-                function(t, n, e) {
-                  var r = t < 12 ? 'AM' : 'PM'
-                  return e ? r.toLowerCase() : r
+                return new Date(e)
+              })(t)),
+                (this.$x = t.x || {}),
+                this.init()
+            }),
+            ($.init = function () {
+              var t = this.$d
+              ;(this.$y = t.getFullYear()),
+                (this.$M = t.getMonth()),
+                (this.$D = t.getDate()),
+                (this.$W = t.getDay()),
+                (this.$H = t.getHours()),
+                (this.$m = t.getMinutes()),
+                (this.$s = t.getSeconds()),
+                (this.$ms = t.getMilliseconds())
+            }),
+            ($.$utils = function () {
+              return g
+            }),
+            ($.isValid = function () {
+              return !('Invalid Date' === this.$d.toString())
+            }),
+            ($.isSame = function (t, e) {
+              var n = v(t)
+              return this.startOf(e) <= n && n <= this.endOf(e)
+            }),
+            ($.isAfter = function (t, e) {
+              return v(t) < this.startOf(e)
+            }),
+            ($.isBefore = function (t, e) {
+              return this.endOf(e) < v(t)
+            }),
+            ($.$g = function (t, e, n) {
+              return g.u(t) ? this[e] : this.set(n, t)
+            }),
+            ($.unix = function () {
+              return Math.floor(this.valueOf() / 1e3)
+            }),
+            ($.valueOf = function () {
+              return this.$d.getTime()
+            }),
+            ($.startOf = function (t, a) {
+              var h = this,
+                c = !!g.u(a) || a,
+                d = g.p(t),
+                $ = function (t, e) {
+                  var n = g.w(h.$u ? Date.UTC(h.$y, e, t) : new Date(h.$y, e, t), h)
+                  return c ? n : n.endOf(i)
                 },
-              l = {
-                YY: String(this.$y).slice(-2),
-                YYYY: this.$y,
-                M: o + 1,
-                MM: D.s(o + 1, 2, '0'),
-                MMM: c(i.monthsShort, o, h, 3),
-                MMMM: h[o] || h(this, e),
-                D: this.$D,
-                DD: D.s(this.$D, 2, '0'),
-                d: String(this.$W),
-                dd: c(i.weekdaysMin, this.$W, a, 2),
-                ddd: c(i.weekdaysShort, this.$W, a, 3),
-                dddd: a[this.$W],
-                H: String(s),
-                HH: D.s(s, 2, '0'),
-                h: d(1),
-                hh: d(2),
-                a: $(s, u, !0),
-                A: $(s, u, !1),
-                m: String(u),
-                mm: D.s(u, 2, '0'),
-                s: String(this.$s),
-                ss: D.s(this.$s, 2, '0'),
-                SSS: D.s(this.$ms, 3, '0'),
-                Z: r,
-              }
+                l = function (t, e) {
+                  return g.w(h.toDate()[t].apply(h.toDate('s'), (c ? [0, 0, 0, 0] : [23, 59, 59, 999]).slice(e)), h)
+                },
+                y = this.$W,
+                M = this.$M,
+                m = this.$D,
+                D = 'set' + (this.$u ? 'UTC' : '')
 
-            return e.replace(f, function(t, n) {
-              return n || l[t] || r.replace(':', '')
-            })
-          }),
-          (d.utcOffset = function() {
-            return 15 * -Math.round(this.$d.getTimezoneOffset() / 15)
-          }),
-          (d.diff = function(t, h, f) {
-            var c,
-              d = D.p(h),
-              $ = g(t),
-              l = 6e4 * ($.utcOffset() - this.utcOffset()),
-              m = this - $,
-              y = D.m(this, $)
-            return (
-              (y =
-                ((c = {}),
-                (c[a] = y / 12),
-                (c[u] = y),
-                (c[o] = y / 3),
-                (c[s] = (m - l) / 6048e5),
-                (c[i] = (m - l) / 864e5),
-                (c[r] = m / 36e5),
-                (c[e] = m / 6e4),
-                (c[n] = m / 1e3),
-                c)[d] || m),
-              f ? y : D.a(y)
-            )
-          }),
-          (d.daysInMonth = function() {
-            return this.endOf(u).$D
-          }),
-          (d.$locale = function() {
-            return m[this.$L]
-          }),
-          (d.locale = function(t, n) {
-            if (!t) return this.$L
-            var e = this.clone()
-            return (e.$L = M(t, n, !0)), e
-          }),
-          (d.clone = function() {
-            return D.w(this.toDate(), this)
-          }),
-          (d.toDate = function() {
-            return new Date(this.$d)
-          }),
-          (d.toJSON = function() {
-            return this.toISOString()
-          }),
-          (d.toISOString = function() {
-            return this.$d.toISOString()
-          }),
-          (d.toString = function() {
-            return this.$d.toUTCString()
-          }),
-          c
-        )
-      })()
+              switch (d) {
+                case o:
+                  return c ? $(1, 0) : $(31, 11)
+
+                case u:
+                  return c ? $(1, M) : $(0, M + 1)
+
+                case s:
+                  var v = this.$locale().weekStart || 0,
+                    S = (y < v ? y + 7 : y) - v
+                  return $(c ? m - S : m + (6 - S), M)
+
+                case i:
+                case f:
+                  return l(D + 'Hours', 0)
+
+                case r:
+                  return l(D + 'Minutes', 1)
+
+                case n:
+                  return l(D + 'Seconds', 2)
+
+                case e:
+                  return l(D + 'Milliseconds', 3)
+
+                default:
+                  return this.clone()
+              }
+            }),
+            ($.endOf = function (t) {
+              return this.startOf(t, !1)
+            }),
+            ($.$set = function (s, a) {
+              var h,
+                c = g.p(s),
+                d = 'set' + (this.$u ? 'UTC' : ''),
+                $ = ((h = {}),
+                (h[i] = d + 'Date'),
+                (h[f] = d + 'Date'),
+                (h[u] = d + 'Month'),
+                (h[o] = d + 'FullYear'),
+                (h[r] = d + 'Hours'),
+                (h[n] = d + 'Minutes'),
+                (h[e] = d + 'Seconds'),
+                (h[t] = d + 'Milliseconds'),
+                h)[c],
+                l = c === i ? this.$D + (a - this.$W) : a
+
+              if (c === u || c === o) {
+                var y = this.clone().set(f, 1)
+                y.$d[$](l), y.init(), (this.$d = y.set(f, Math.min(this.$D, y.daysInMonth())).$d)
+              } else $ && this.$d[$](l)
+
+              return this.init(), this
+            }),
+            ($.set = function (t, e) {
+              return this.clone().$set(t, e)
+            }),
+            ($.get = function (t) {
+              return this[g.p(t)]()
+            }),
+            ($.add = function (t, a) {
+              var f,
+                h = this
+              t = Number(t)
+
+              var c = g.p(a),
+                d = function (e) {
+                  var n = v(h)
+                  return g.w(n.date(n.date() + Math.round(e * t)), h)
+                }
+
+              if (c === u) return this.set(u, this.$M + t)
+              if (c === o) return this.set(o, this.$y + t)
+              if (c === i) return d(1)
+              if (c === s) return d(7)
+              var $ = ((f = {}), (f[n] = 6e4), (f[r] = 36e5), (f[e] = 1e3), f)[c] || 1,
+                l = this.$d.getTime() + t * $
+              return g.w(l, this)
+            }),
+            ($.subtract = function (t, e) {
+              return this.add(-1 * t, e)
+            }),
+            ($.format = function (t) {
+              var e = this
+              if (!this.isValid()) return 'Invalid Date'
+
+              var n = t || 'YYYY-MM-DDTHH:mm:ssZ',
+                r = g.z(this),
+                i = this.$locale(),
+                s = this.$H,
+                u = this.$m,
+                a = this.$M,
+                o = i.weekdays,
+                f = i.months,
+                h = function (t, r, i, s) {
+                  return (t && (t[r] || t(e, n))) || i[r].substr(0, s)
+                },
+                d = function (t) {
+                  return g.s(s % 12 || 12, t, '0')
+                },
+                $ =
+                  i.meridiem ||
+                  function (t, e, n) {
+                    var r = t < 12 ? 'AM' : 'PM'
+                    return n ? r.toLowerCase() : r
+                  },
+                l = {
+                  YY: String(this.$y).slice(-2),
+                  YYYY: this.$y,
+                  M: a + 1,
+                  MM: g.s(a + 1, 2, '0'),
+                  MMM: h(i.monthsShort, a, f, 3),
+                  MMMM: h(f, a),
+                  D: this.$D,
+                  DD: g.s(this.$D, 2, '0'),
+                  d: String(this.$W),
+                  dd: h(i.weekdaysMin, this.$W, o, 2),
+                  ddd: h(i.weekdaysShort, this.$W, o, 3),
+                  dddd: o[this.$W],
+                  H: String(s),
+                  HH: g.s(s, 2, '0'),
+                  h: d(1),
+                  hh: d(2),
+                  a: $(s, u, !0),
+                  A: $(s, u, !1),
+                  m: String(u),
+                  mm: g.s(u, 2, '0'),
+                  s: String(this.$s),
+                  ss: g.s(this.$s, 2, '0'),
+                  SSS: g.s(this.$ms, 3, '0'),
+                  Z: r,
+                }
+
+              return n.replace(c, function (t, e) {
+                return e || l[t] || r.replace(':', '')
+              })
+            }),
+            ($.utcOffset = function () {
+              return 15 * -Math.round(this.$d.getTimezoneOffset() / 15)
+            }),
+            ($.diff = function (t, f, h) {
+              var c,
+                d = g.p(f),
+                $ = v(t),
+                l = 6e4 * ($.utcOffset() - this.utcOffset()),
+                y = this - $,
+                M = g.m(this, $)
+              return (
+                (M =
+                  ((c = {}),
+                  (c[o] = M / 12),
+                  (c[u] = M),
+                  (c[a] = M / 3),
+                  (c[s] = (y - l) / 6048e5),
+                  (c[i] = (y - l) / 864e5),
+                  (c[r] = y / 36e5),
+                  (c[n] = y / 6e4),
+                  (c[e] = y / 1e3),
+                  c)[d] || y),
+                h ? M : g.a(M)
+              )
+            }),
+            ($.daysInMonth = function () {
+              return this.endOf(u).$D
+            }),
+            ($.$locale = function () {
+              return M[this.$L]
+            }),
+            ($.locale = function (t, e) {
+              if (!t) return this.$L
+              var n = this.clone(),
+                r = D(t, e, !0)
+              return r && (n.$L = r), n
+            }),
+            ($.clone = function () {
+              return g.w(this.$d, this)
+            }),
+            ($.toDate = function () {
+              return new Date(this.valueOf())
+            }),
+            ($.toJSON = function () {
+              return this.isValid() ? this.toISOString() : null
+            }),
+            ($.toISOString = function () {
+              return this.$d.toISOString()
+            }),
+            ($.toString = function () {
+              return this.$d.toUTCString()
+            }),
+            d
+          )
+        })(),
+        p = S.prototype
 
       return (
-        (g.prototype = v.prototype),
-        (g.extend = function(t, n) {
-          return t(n, v, g), g
+        (v.prototype = p),
+        [
+          ['$ms', t],
+          ['$s', e],
+          ['$m', n],
+          ['$H', r],
+          ['$W', i],
+          ['$M', u],
+          ['$y', o],
+          ['$D', f],
+        ].forEach(function (t) {
+          p[t[1]] = function (e) {
+            return this.$g(e, t[0], t[1])
+          }
         }),
-        (g.locale = M),
-        (g.isDayjs = y),
-        (g.unix = function(t) {
-          return g(1e3 * t)
+        (v.extend = function (t, e) {
+          return t.$i || (t(e, S, v), (t.$i = !0)), v
         }),
-        (g.en = m[l]),
-        (g.Ls = m),
-        g
+        (v.locale = D),
+        (v.isDayjs = m),
+        (v.unix = function (t) {
+          return v(1e3 * t)
+        }),
+        (v.en = M[y]),
+        (v.Ls = M),
+        (v.p = {}),
+        v
       )
     })
   }
@@ -454,22 +450,23 @@
   // ASSET: ../../../node_modules/dayjs/locale/ja.js
   var $tgU2$exports = {}
   var $tgU2$var$define
-  !(function(e, _) {
+  !(function (_, e) {
     'object' == typeof $tgU2$exports && 'undefined' != 'object'
-      ? ($tgU2$exports = _(($XZPv$init(), $XZPv$exports)))
+      ? ($tgU2$exports = e(($XZPv$init(), $XZPv$exports)))
       : 'function' == typeof $tgU2$var$define && $tgU2$var$define.amd
-      ? $tgU2$var$define(['dayjs'], _)
-      : (e.dayjs_locale_ja = _(e.dayjs))
-  })($tgU2$exports, function(e) {
-    e = e && e.hasOwnProperty('default') ? e.default : e
-    var _ = {
+      ? $tgU2$var$define(['dayjs'], e)
+      : (_.dayjs_locale_ja = e(_.dayjs))
+  })($tgU2$exports, function (_) {
+    _ = _ && _.hasOwnProperty('default') ? _.default : _
+    var e = {
       name: 'ja',
       weekdays: '日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日'.split('_'),
       weekdaysShort: '日_月_火_水_木_金_土'.split('_'),
       weekdaysMin: '日_月_火_水_木_金_土'.split('_'),
       months: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
-      ordinal: function(e) {
-        return e + '日'
+      monthsShort: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+      ordinal: function (_) {
+        return _ + '日'
       },
       formats: {
         LT: 'HH:mm',
@@ -483,8 +480,8 @@
         lll: 'YYYY年M月D日 HH:mm',
         llll: 'YYYY年M月D日(ddd) HH:mm',
       },
-      meridiem: function(e) {
-        return e < 12 ? '午前' : '午後'
+      meridiem: function (_) {
+        return _ < 12 ? '午前' : '午後'
       },
       relativeTime: {
         future: '%s後',
@@ -502,32 +499,39 @@
         yy: '%d年',
       },
     }
-    return e.locale(_, null, !0), _
+    return _.locale(e, null, !0), e
   })
   var $rsYp$export$FORMAT_DEFAULT = 'YYYY-MM-DDTHH:mm:ssZ'
-  var $rsYp$export$REGEX_PARSE = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/
-  var $rsYp$export$REGEX_FORMAT = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g
 
-  var $kx9$export$default = function(o, c, d) {
+  // eslint-disable-next-line import/prefer-default-export
+  var $RT03$export$t = function t(format) {
+    return format.replace(/(\[[^\]]+])|(MMMM|MM|DD|dddd)/g, function (_, a, b) {
+      return a || b.slice(1)
+    })
+  }
+
+  var $RT03$export$englishFormats = {
+    LTS: 'h:mm:ss A',
+    LT: 'h:mm A',
+    L: 'MM/DD/YYYY',
+    LL: 'MMMM D, YYYY',
+    LLL: 'MMMM D, YYYY h:mm A',
+    LLLL: 'dddd, MMMM D, YYYY h:mm A',
+  }
+
+  var $RT03$export$u = function u(formatStr, formats) {
+    return formatStr.replace(/(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g, function (_, a, b) {
+      var B = b && b.toUpperCase()
+      return a || formats[b] || $RT03$export$englishFormats[b] || $RT03$export$t(formats[B])
+    })
+  }
+
+  var $kx9C$export$default = function (o, c, d) {
     var proto = c.prototype
     var oldFormat = proto.format
-    var englishFormats = {
-      LTS: 'h:mm:ss A',
-      LT: 'h:mm A',
-      L: 'MM/DD/YYYY',
-      LL: 'MMMM D, YYYY',
-      LLL: 'MMMM D, YYYY h:mm A',
-      LLLL: 'dddd, MMMM D, YYYY h:mm A',
-    }
-    d.en.formats = englishFormats
+    d.en.formats = $RT03$export$englishFormats
 
-    var t = function t(format) {
-      return format.replace(/(\[[^\]]+])|(MMMM|MM|DD|dddd)/g, function(_, a, b) {
-        return a || b.slice(1)
-      })
-    }
-
-    proto.format = function(formatStr) {
+    proto.format = function (formatStr) {
       if (formatStr === void 0) {
         formatStr = $rsYp$export$FORMAT_DEFAULT
       }
@@ -536,21 +540,15 @@
         _this$$locale$formats = _this$$locale.formats,
         formats = _this$$locale$formats === void 0 ? {} : _this$$locale$formats
 
-      var result = formatStr.replace(/(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g, function(_, a, b) {
-        var B = b && b.toUpperCase()
-        return a || formats[b] || englishFormats[b] || t(formats[B])
-      })
+      var result = $RT03$export$u(formatStr, formats)
       return oldFormat.call(this, result)
     }
   }
 
   var $XZPv$$interop$default = $parcel$interopDefault($XZPv$exports)
   $XZPv$$interop$default.d.locale('ja')
-  $XZPv$$interop$default.d.extend($kx9$export$default)
-  const $LVu9$var$baseUrl = location.pathname
-    .split('/')
-    .slice(0, 3)
-    .join('/')
+  $XZPv$$interop$default.d.extend($kx9C$export$default)
+  const $LVu9$var$baseUrl = location.pathname.split('/').slice(0, 3).join('/')
 
   async function $LVu9$export$getPages() {
     return $.get(`${$LVu9$var$baseUrl}/pages-json`)
@@ -579,33 +577,21 @@
   async function $LVu9$export$getDataInputs(id) {
     const html = await $.get(`${$LVu9$var$baseUrl}/data/${id}/inputs`)
     const doc = new DOMParser().parseFromString(html, 'text/html')
-    return Array.from(doc.querySelectorAll('.view-data > tbody > tr')).map(tr => {
-      var _tr$cells$0$querySele, _tr$cells$0$querySele2
-
-      return {
-        pageId:
-          (_tr$cells$0$querySele = tr.cells[0].querySelector('a')) === null || _tr$cells$0$querySele === void 0
-            ? void 0
-            : (_tr$cells$0$querySele2 = _tr$cells$0$querySele.href.match(/(?<=\/)\d+(?=\/)/)) === null ||
-              _tr$cells$0$querySele2 === void 0
-            ? void 0
-            : _tr$cells$0$querySele2[0],
-        pageName: tr.cells[0].textContent.trim(),
-        dbe: tr.cells[2].textContent.trim(),
-      }
-    })
+    return Array.from(doc.querySelectorAll('.view-data > tbody > tr')).map(tr => ({
+      pageId: tr.cells[0].querySelector('a')?.href.match(/(?<=\/)\d+(?=\/)/)?.[0],
+      pageName: tr.cells[0].textContent.trim(),
+      dbe: tr.cells[2].textContent.trim(),
+    }))
   }
 
-  function $th8$export$saveAsCsv(rows, name) {
-    const blob = $th8$var$createExcelCsvBlob(rows)
+  function $th8A$export$saveAsCsv(rows, name) {
+    const blob = $th8A$var$createExcelCsvBlob(rows)
     const date = $XZPv$$interop$default.d().format('YYYYMMDD')
-    const site = $('#currentSite')
-      .text()
-      .trim()
-    $th8$var$saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
+    const site = $('#currentSite').text().trim()
+    $th8A$var$saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
   }
 
-  function $th8$var$saveBlob(blob, fileName) {
+  function $th8A$var$saveBlob(blob, fileName) {
     const url = URL.createObjectURL(blob)
     $('<a/>')
       .attr('download', fileName)
@@ -616,34 +602,32 @@
     URL.revokeObjectURL(url)
   }
 
-  function $th8$var$createExcelCsvBlob(rows) {
-    const value = $th8$var$csvStringify(rows)
+  function $th8A$var$createExcelCsvBlob(rows) {
+    const value = $th8A$var$csvStringify(rows)
     const bom = new Uint8Array([0xef, 0xbb, 0xbf])
     return new Blob([bom, value], {
       type: 'text/csv',
     })
   }
 
-  function $th8$var$csvStringify(rows) {
-    return rows.map(cells => cells.map($th8$var$quoteForCsv).join(',')).join('\r\n')
+  function $th8A$var$csvStringify(rows) {
+    return rows.map(cells => cells.map($th8A$var$quoteForCsv).join(',')).join('\r\n')
   }
 
-  function $th8$var$quoteForCsv(value) {
-    return `"${$th8$var$convertValue(value).replace(/"/g, '""')}"`
+  function $th8A$var$quoteForCsv(value) {
+    return `"${$th8A$var$convertValue(value).replace(/"/g, '""')}"`
   }
 
-  function $th8$var$convertValue(value) {
-    var _value
-
+  function $th8A$var$convertValue(value) {
     if (Array.isArray(value)) {
-      return value.map($th8$var$convertValue).join('\n')
+      return value.map($th8A$var$convertValue).join('\n')
     }
 
     if (value instanceof Object) {
       return JSON.stringify(value)
     }
 
-    return String((_value = value) !== null && _value !== void 0 ? _value : '')
+    return String(value ?? '')
   }
 
   class $hR3q$export$Modal {
@@ -717,13 +701,11 @@
       this.text = $('<div>').css({
         fontSize: '4vw',
       })
-      this.progress = $('<progress/>')
-        .attr('max', this.options.maxValue)
-        .css({
-          width: '50vw',
-          height: '2vw',
-          backgroundColor: 'transparent',
-        })
+      this.progress = $('<progress/>').attr('max', this.options.maxValue).css({
+        width: '50vw',
+        height: '2vw',
+        backgroundColor: 'transparent',
+      })
       this.body
         .css({
           display: 'flex',
@@ -752,7 +734,7 @@
     }
   }
 
-  const $o$var$columns = [
+  const $o294$var$columns = [
     ['id', 'ID'],
     ['name', '名前'],
     ['pageId', 'ページ ID'],
@@ -762,7 +744,7 @@
     ['modifiedAt', '更新日'],
   ]
 
-  async function $o$var$exportData() {
+  async function $o294$var$exportData() {
     const items = await $LVu9$export$getDataList()
     const modal = $hR3q$export$ProgressModal.open({
       maxValue: items.length,
@@ -780,35 +762,30 @@
     const rows = itemsWithInputs.flatMap(({ item, inputs }) => {
       item.createdAt = $XZPv$$interop$default.d(item.createdAt).format('llll')
       item.modifiedAt = $XZPv$$interop$default.d(item.modifiedAt).format('llll')
-      return inputs.map(input => [...$o$var$columns.map(([key]) => input[key] || item[key])])
+      return inputs.map(input => [...$o294$var$columns.map(([key]) => input[key] || item[key])])
     })
-    const header = $o$var$columns.map(c => c[1])
+    const header = $o294$var$columns.map(c => c[1])
     rows.unshift(header)
-    $th8$export$saveAsCsv(rows, 'カスタムデータエレメント一覧')
+    $th8A$export$saveAsCsv(rows, 'カスタムデータエレメント一覧')
   }
 
-  function $o$export$registerDataExporter() {
-    GM_registerMenuCommand('カスタムデータエレメントをエクスポート', $o$var$exportData)
+  function $o294$export$registerDataExporter() {
+    GM_registerMenuCommand('カスタムデータエレメントをエクスポート', $o294$var$exportData)
   }
 
-  async function $YOq$export$waitAll(promises, progress) {
-    var _promises$map
-
-    return (_promises$map = promises.map(p => p.then($YOq$export$tap(progress)))), Promise.all(_promises$map)
+  async function $YOqM$export$waitAll(promises, progress) {
+    return Promise.all(promises.map(p => p.then($YOqM$export$tap(progress))))
   }
 
-  function $YOq$export$unique(arr) {
+  function $YOqM$export$unique(arr) {
     return arr.filter((value, i) => arr.indexOf(value) === i)
   }
 
-  function $YOq$export$tap(fn) {
-    return function(arg) {
-      fn(arg)
-      return arg
-    }
+  function $YOqM$export$tap(fn) {
+    return arg => (fn(arg), arg)
   }
 
-  function $YOq$export$arrayToMapByItemId(arr) {
+  function $YOqM$export$arrayToMapByItemId(arr) {
     const res = {}
     arr.forEach(item => {
       res[item.id] = item
@@ -816,44 +793,14 @@
     return res
   }
 
-  function $YOq$export$convertPatterns(urlPatterns) {
-    var _ref, _urlPatterns$includes, _ref2, _urlPatterns$excludes
-
+  function $YOqM$export$convertPatterns(urlPatterns) {
     return {
-      includes:
-        (_ref =
-          urlPatterns === null || urlPatterns === void 0
-            ? void 0
-            : (_urlPatterns$includes = urlPatterns.includes) === null || _urlPatterns$includes === void 0
-            ? void 0
-            : _urlPatterns$includes.map(item => {
-                var _item$pattern
-
-                return (_item$pattern = item.pattern) !== null && _item$pattern !== void 0
-                  ? _item$pattern
-                  : '(不明なデータ)'
-              })) !== null && _ref !== void 0
-          ? _ref
-          : [],
-      excludes:
-        (_ref2 =
-          urlPatterns === null || urlPatterns === void 0
-            ? void 0
-            : (_urlPatterns$excludes = urlPatterns.excludes) === null || _urlPatterns$excludes === void 0
-            ? void 0
-            : _urlPatterns$excludes.map(item => {
-                var _item$pattern2
-
-                return (_item$pattern2 = item.pattern) !== null && _item$pattern2 !== void 0
-                  ? _item$pattern2
-                  : '(不明なデータ)'
-              })) !== null && _ref2 !== void 0
-          ? _ref2
-          : [],
+      includes: urlPatterns?.includes?.map(item => item.pattern ?? '(不明なデータ)') ?? [],
+      excludes: urlPatterns?.excludes?.map(item => item.pattern ?? '(不明なデータ)') ?? [],
     }
   }
 
-  const $pM$var$columns = [
+  const $pMWy$var$columns = [
     ['id', 'ID'],
     ['name', '名前'],
     ['includes', '対象 URL パターン'],
@@ -864,27 +811,27 @@
     ['modifiedAt', '更新日'],
   ]
 
-  async function $pM$var$exportPage() {
+  async function $pMWy$var$exportPage() {
     const resources = [$LVu9$export$getPages()]
     const modal = $hR3q$export$ProgressModal.open({
       maxValue: resources.length,
     })
-    const [pages] = await $YOq$export$waitAll(resources, () => modal.increment())
+    const [pages] = await $YOqM$export$waitAll(resources, () => modal.increment())
     const rows = pages.map(item => {
-      const { includes, excludes } = $YOq$export$convertPatterns(item.urlPatterns)
+      const { includes, excludes } = $YOqM$export$convertPatterns(item.urlPatterns)
       item.includes = includes
       item.excludes = excludes
       item.createdAt = $XZPv$$interop$default.d(item.createdAt).format('llll')
       item.modifiedAt = $XZPv$$interop$default.d(item.modifiedAt).format('llll')
-      return [...$pM$var$columns.map(column => item[column[0]])]
+      return [...$pMWy$var$columns.map(column => item[column[0]])]
     })
-    const header = $pM$var$columns.map(c => c[1])
+    const header = $pMWy$var$columns.map(c => c[1])
     rows.unshift(header)
-    $th8$export$saveAsCsv(rows, 'ページ一覧')
+    $th8A$export$saveAsCsv(rows, 'ページ一覧')
   }
 
-  function $pM$export$registerPageExporter() {
-    GM_registerMenuCommand('ページをエクスポート', $pM$var$exportPage)
+  function $pMWy$export$registerPageExporter() {
+    GM_registerMenuCommand('ページをエクスポート', $pMWy$var$exportPage)
   }
 
   const $GzEd$var$itemProps = [
@@ -917,43 +864,27 @@
     const modal = $hR3q$export$ProgressModal.open({
       maxValue: resources.length,
     })
-    const [pages, tags, scripts] = await $YOq$export$waitAll(resources, () => modal.increment())
-    const pageById = $YOq$export$arrayToMapByItemId(pages)
-    const tagById = $YOq$export$arrayToMapByItemId(tags)
+    const [pages, tags, scripts] = await $YOqM$export$waitAll(resources, () => modal.increment())
+    const pageById = $YOqM$export$arrayToMapByItemId(pages)
+    const tagById = $YOqM$export$arrayToMapByItemId(tags)
     const rows = scripts.map(item => {
-      var _item$tagsId, _item$pagesId
-
-      const tagIds =
-        ((_item$tagsId = item.tagsId) === null || _item$tagsId === void 0
-          ? void 0
-          : _item$tagsId.filter(id => id in tagById)) || []
-      const pageIds =
-        ((_item$pagesId = item.pagesId) === null || _item$pagesId === void 0
-          ? void 0
-          : _item$pagesId.filter(id => id in pageById)) || []
+      const tagIds = item.tagsId?.filter(id => id in tagById) || []
+      const pageIds = item.pagesId?.filter(id => id in pageById) || []
       item.tagIds = tagIds
       item.pageIds = pageIds
-      item.tagNames = tagIds.map(id => {
-        var _tagById$id
-
-        return (_tagById$id = tagById[id]) === null || _tagById$id === void 0 ? void 0 : _tagById$id.name
-      })
-      item.pageNames = pageIds.map(id => {
-        var _pageById$id
-
-        return (_pageById$id = pageById[id]) === null || _pageById$id === void 0 ? void 0 : _pageById$id.name
-      })
+      item.tagNames = tagIds.map(id => tagById[id]?.name)
+      item.pageNames = pageIds.map(id => pageById[id]?.name)
       return [...$GzEd$var$itemProps.map(k => item[k])]
     })
     rows.unshift($GzEd$var$header)
-    $th8$export$saveAsCsv(rows, 'スクリプト一覧')
+    $th8A$export$saveAsCsv(rows, 'スクリプト一覧')
   }
 
   function $GzEd$export$registerScriptExporter() {
     GM_registerMenuCommand('スクリプトをエクスポート', $GzEd$var$exportScript)
   }
 
-  const $Fbc$var$columns = [
+  const $FbcY$var$columns = [
     ['id', 'ID'],
     ['status', 'ステータス'],
     ['name', 'タグ名'],
@@ -969,7 +900,7 @@
     ['modifiedAt', '更新日'],
   ]
 
-  async function $Fbc$var$exportTag() {
+  async function $FbcY$var$exportTag() {
     const tagIds = Array.from($('.row-selected')).map(el => el.dataset.tagId)
 
     if (tagIds.findIndex(id => !id) !== -1) {
@@ -988,21 +919,15 @@
     })
     const rows = await Promise.all(
       tagIds.map(async id => {
-        var _patterns$flatMap$sor, _patterns$flatMap$sor2
-
-        const [tag, pages] = await $YOq$export$waitAll(
+        const [tag, pages] = await $YOqM$export$waitAll(
           [$LVu9$export$getTagAttributes(id), $LVu9$export$getTagPageAssignments(id)],
           () => modal.increment(),
         )
         tag.pageIds = pages.map(p => p.id)
         tag.pageNames = pages.map(p => p.name)
-        const patterns = pages.map(p => $YOq$export$convertPatterns(p.urlPatterns))
-        tag.includes =
-          ((_patterns$flatMap$sor = patterns.flatMap(item => item.includes).sort()),
-          $YOq$export$unique(_patterns$flatMap$sor))
-        tag.excludes =
-          ((_patterns$flatMap$sor2 = patterns.flatMap(item => item.excludes).sort()),
-          $YOq$export$unique(_patterns$flatMap$sor2))
+        const patterns = pages.map(p => $YOqM$export$convertPatterns(p.urlPatterns))
+        tag.includes = $YOqM$export$unique(patterns.flatMap(item => item.includes).sort())
+        tag.excludes = $YOqM$export$unique(patterns.flatMap(item => item.excludes).sort())
         const fields = tag.fields.reduce((o, p) => ((o[p.key] = p.value), o), {})
 
         if (tag.tagDefinitionId === 'custom_markup_parsing_tag') {
@@ -1018,28 +943,27 @@
           }[tag.status] || tag.status
         tag.createdAt = $XZPv$$interop$default.d(tag.createdAt).format('llll')
         tag.modifiedAt = $XZPv$$interop$default.d(tag.modifiedAt).format('llll')
-        return [...$Fbc$var$columns.map(column => tag[column[0]])]
+        return [...$FbcY$var$columns.map(column => tag[column[0]])]
       }),
     )
-    const header = $Fbc$var$columns.map(c => c[1])
+    const header = $FbcY$var$columns.map(c => c[1])
     rows.unshift(header)
-    $th8$export$saveAsCsv(rows, 'サービスタグ')
+    $th8A$export$saveAsCsv(rows, 'サービスタグ')
   }
 
-  function $Fbc$export$registerTagExporter() {
-    GM_registerMenuCommand('タグをエクスポート', $Fbc$var$exportTag)
+  function $FbcY$export$registerTagExporter() {
+    GM_registerMenuCommand('タグをエクスポート', $FbcY$var$exportTag)
   }
 
   {
-  }
-  // https://control.theyjtag.jp/sites/*/tags
+  } // https://control.theyjtag.jp/sites/*/tags
   // https://control.theyjtag.jp/sites/*/pages/*/tag-assignments
 
   if (/^\/sites\/[^/]+\/(?:tags|pages\/[^/]+\/tag-assignments)$/.test(location.pathname)) {
-    $Fbc$export$registerTagExporter()
+    $FbcY$export$registerTagExporter()
   }
 
-  $o$export$registerDataExporter()
-  $pM$export$registerPageExporter()
+  $o294$export$registerDataExporter()
+  $pMWy$export$registerPageExporter()
   $GzEd$export$registerScriptExporter()
 })()

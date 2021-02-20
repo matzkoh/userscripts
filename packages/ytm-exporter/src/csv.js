@@ -3,9 +3,7 @@ import dayjs from './dayjs'
 export function saveAsCsv(rows, name) {
   const blob = createExcelCsvBlob(rows)
   const date = dayjs().format('YYYYMMDD')
-  const site = $('#currentSite')
-    .text()
-    .trim()
+  const site = $('#currentSite').text().trim()
 
   saveBlob(blob, `[${date}] [${site}] ${name}.csv`)
 }

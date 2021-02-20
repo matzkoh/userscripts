@@ -270,7 +270,9 @@ class EventEmitter {
         try {
           EventEmitter.applyListener(this, listener, event)
         } catch (e) {
-          setTimeout(() => throw e, 0)
+          setTimeout(() => {
+            throw e
+          }, 0)
         }
       })
     }
@@ -457,7 +459,7 @@ class Preference extends EventEmitter {
 
   write() {
     this.dict.__version__ = GM_info.script.version
-    this.dict |> ::Serializer.stringify |> (_ => GM_setValue(Preference.prefName, _))
+    GM_setValue(Preference.prefName, Serializer.stringify(this.dict))
   }
 
   autosave() {
@@ -465,7 +467,7 @@ class Preference extends EventEmitter {
       return
     }
 
-    window.addEventListener('unload', ::this.write, false)
+    window.addEventListener('unload', () => this.write(), false)
     this.autosaveReserved = true
   }
 
@@ -728,8 +730,8 @@ class Panel extends EventEmitter {
         <div class="fngf-panel-body fngf-column" ref="body"></div>
         <div class="fngf-panel-buttons fngf-row" ref="buttons">
           <div class="fngf-btn-group fngf-row">
-            <button type="button" class="fngf-btn" @click="${::this.apply}">${__`OK`}</button>
-            <button type="button" class="fngf-btn" @click="${::this.close}">${__`Cancel`}</button>
+            <button type="button" class="fngf-btn" @click="${() => this.apply()}">${__`OK`}</button>
+            <button type="button" class="fngf-btn" @click="${() => this.close()}">${__`Cancel`}</button>
           </div>
         </div>
       </form>
@@ -949,7 +951,7 @@ class FilterListPanel extends Panel {
 
     this.dom.buttons.insertBefore(buttons, this.dom.buttons.firstChild)
 
-    this.on('escape', ::this.close)
+    this.on('escape', () => this.close())
     this.on('showing', this.initContents)
     this.on('apply', this)
     this.on('hidden', () => {
@@ -1144,7 +1146,7 @@ evalInContent(() => {
   function open(method, url, ...args) {
     this.__url__ = url
 
-    return this::XHR.prototype.open(method, url, ...args)
+    return XHR.prototype.open.call(this, method, url, ...args)
   }
 
   function setRequestHeader(header, value) {
@@ -1152,7 +1154,7 @@ evalInContent(() => {
       this.__auth__ = value
     }
 
-    return this::XHR.prototype.setRequestHeader(header, value)
+    return XHR.prototype.setRequestHeader.call(this, header, value)
   }
 
   function onReadyStateChange() {
@@ -1200,7 +1202,7 @@ let { contextmenu } = $el`
 
 MenuCommand.contextmenu = contextmenu
 
-pref.on('change', function({ key, newValue }) {
+pref.on('change', function ({ key, newValue }) {
   switch (key) {
     case 'filter':
       if (!(newValue instanceof Filter)) {
@@ -1455,8 +1457,8 @@ function registerMenuCommands() {
     panel.open()
   })
 
-  MenuCommand.register(`${__`Import Configuration`}...`, ::pref.importFromFile)
-  MenuCommand.register(__`Export Configuration`, ::pref.exportToFile)
+  MenuCommand.register(`${__`Import Configuration`}...`, () => pref.importFromFile())
+  MenuCommand.register(__`Export Configuration`, () => pref.exportToFile())
 }
 
 function sendJSON(details) {
@@ -1552,7 +1554,7 @@ function addSettingsMenuItem() {
 
 async function openFilePicker(multiple) {
   return new Promise(resolve => {
-    const input = $el`<input type="file" @change="${() => input.files |> Array.from |> resolve}">`.first
+    const input = $el`<input type="file" @change="${() => resolve(Array.from(input.files))}">`.first
     input.multiple = multiple
     input.click()
   })
@@ -1571,7 +1573,7 @@ async function notify(body, options) {
       const n = new Notification(options.title, options)
 
       if (options.autoClose) {
-        setTimeout(::n.close, options.autoClose)
+        setTimeout(() => n.close(), options.autoClose)
       }
 
       resolve(n)

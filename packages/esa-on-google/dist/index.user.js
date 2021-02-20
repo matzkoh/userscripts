@@ -11,9 +11,9 @@
 // @connect      api.esa.io
 // ==/UserScript==
 
-;(function() {
+;(function () {
   // ASSET: index.js
-  var $Focm$exports = function() {
+  var $Focm$exports = function () {
     var exports = this
     var module = {
       exports: this,
@@ -59,7 +59,7 @@
     content.querySelector('.eog-btn-token').addEventListener('click', () => {
       const token = prompt('/user/applications で発行した Personal access token', '')
 
-      if (token === null || token === void 0 ? void 0 : token.length) {
+      if (token?.length) {
         GM_setValue('esa_token', token)
         location.reload()
       }
@@ -93,8 +93,6 @@
     function renderContent(data) {
       const postContainer = content.querySelector('.eog-posts')
       data.posts.forEach(post => {
-        var _post$category
-
         const el = document.createElement('div')
         el.className = 'eog-flex eog-post eog-mb-2'
         el.innerHTML = `
@@ -136,10 +134,7 @@
         el.querySelector('.eog-post-updater-icon').src = post.updated_by.icon
         el.querySelector('.eog-post-updater-icon').title = `${post.updated_by.screen_name}\n${post.updated_by.name}`
         el.querySelector('.eog-post-updater-icon').classList.toggle('eog-hidden', isSameUpdater)
-        el.querySelector('.eog-post-category').textContent =
-          ((_post$category = post.category) === null || _post$category === void 0
-            ? void 0
-            : _post$category.replace(/\//g, ' $& ')) || ''
+        el.querySelector('.eog-post-category').textContent = post.category?.replace(/\//g, ' $& ') || ''
         el.querySelector('.eog-post-tags').textContent = post.tags.map(t => `#${t}`).join(' ')
         el.querySelector('.eog-post-wip').classList.toggle('eog-hidden', !post.wip)
         el.querySelector('.eog-post-name').href = post.url
@@ -161,7 +156,7 @@
     module.exports = $Focm$exports
   } else if (typeof define === 'function' && define.amd) {
     // RequireJS
-    define(function() {
+    define(function () {
       return $Focm$exports
     })
   }
