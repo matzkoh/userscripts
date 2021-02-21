@@ -26,7 +26,7 @@ const notificationDefaults = {
   autoClose: 5000,
 }
 
-const CSS_STYLE_TEXT = fs.readFileSync('src/generic.scss', 'utf-8') + fs.readFileSync('src/style.scss', 'utf-8')
+const CSS_STYLE_TEXT = fs.readFileSync('src/generic.css', 'utf-8') + fs.readFileSync('src/style.css', 'utf-8')
 
 function __(strings, ...values) {
   let key = values.map((v, i) => `${strings[i]}{${i}}`).join('') + strings[strings.length - 1]
