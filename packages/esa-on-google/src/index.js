@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         esa on Google
 // @namespace    https://github.com/matzkoh
-// @version      1.0.2
+// @version      1.1.0
 // @description  show esa search result on google search
 // @author       matzkoh
 // @include      https://www.google.tld/search?*
@@ -12,9 +12,12 @@
 // ==/UserScript==
 
 const queryString = new URL(location).searchParams.get('q')
+
 if (!queryString) {
   return
 }
+
+const organization = GM_getValue('esa_organization')
 
 const container = document.querySelector('#rhs') ?? document.querySelector('#center_col')
 const content = document.createElement('div')
@@ -42,39 +45,55 @@ content.innerHTML = `
     .eog-post-body { word-break: break-word; }
   </style>
   <div class="eog-posts">
-    <div class="eog-no-post eog-my-1"></div>
+    <div class="eog-no-post eog-my-1">Organization を設定してください</div>
   </div>
   <div class="eog-flex">
+    <button class="eog-btn-organization">Organization 設定/変更</button>
     <div class="eog-spacer"></div>
     <button class="eog-btn-token">esa トークン 登録/変更</button>
   </div>
 `
-content.querySelector('.eog-no-post').textContent = `${queryString} にマッチする esa 記事は見つかりませんでした`
+
+if (organization) {
+  content.querySelector('.eog-no-post').textContent = `${queryString} にマッチする esa 記事は見つかりませんでした`
+}
+
+content.querySelector('.eog-btn-organization').addEventListener('click', () => {
+  const org = prompt('https://{{この部分を入力}}.esa.io', organization ?? '')
+  if (org) {
+    GM_setValue('esa_organization', org)
+    location.reload()
+  }
+})
+
 content.querySelector('.eog-btn-token').addEventListener('click', () => {
   const token = prompt('/user/applications で発行した Personal access token', '')
-  if (token?.length) {
+  if (token) {
     GM_setValue('esa_token', token)
     location.reload()
   }
 })
+
 container.appendChild(content)
 
-GM_xmlhttpRequest({
-  method: 'get',
-  url: `https://api.esa.io/v1/teams/opt-technologies/posts?sort=best_match&per_page=10&q=${queryString}`,
-  headers: {
-    Authorization: `Bearer ${GM_getValue('esa_token')}`,
-  },
-  responseType: 'json',
-  onerror: renderError,
-  onload(res) {
-    if (200 <= res.status && res.status < 300) {
-      renderContent(res.response)
-    } else {
-      renderError(res.response)
-    }
-  },
-})
+if (organization) {
+  GM_xmlhttpRequest({
+    method: 'get',
+    url: `https://api.esa.io/v1/teams/${organization}/posts?sort=best_match&per_page=10&q=${queryString}`,
+    headers: {
+      Authorization: `Bearer ${GM_getValue('esa_token')}`,
+    },
+    responseType: 'json',
+    onerror: renderError,
+    onload(res) {
+      if (200 <= res.status && res.status < 300) {
+        renderContent(res.response)
+      } else {
+        renderError(res.response)
+      }
+    },
+  })
+}
 
 function renderError(error) {
   const el = document.createElement('div')
