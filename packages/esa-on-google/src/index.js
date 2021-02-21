@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         esa on Google
 // @namespace    https://github.com/matzkoh
-// @version      1.0.1
+// @version      1.0.2
 // @description  show esa search result on google search
 // @author       matzkoh
 // @include      https://www.google.tld/search?*
@@ -16,10 +16,13 @@ if (!queryString) {
   return
 }
 
-const container = document.querySelector('#rhs')
+const container = document.querySelector('#rhs') ?? document.querySelector('#center_col')
 const content = document.createElement('div')
+content.className = 'eog-content'
 content.innerHTML = `
   <style>
+    .eog-content { width: 457px; }
+    #center_col > .eog-content { position: absolute; left: 105%; top: 0; }
     .eog-mx-1 { margin-left: 0.5rem; margin-right: 0.5rem; }
     .eog-my-1 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
     .eog-mt-1 { margin-top: 0.5rem; }
