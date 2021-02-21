@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Add CircleCI Workflows Link
 // @namespace    https://github.com/matzkoh
-// @version      1.0.1
+// @version      1.0.2
 // @description  現在のブランチにおける CircleCI Workflows ページへのリンクを追加する
 // @author       matzkoh
-// @include      https://github.com/*
+// @match        https://github.com/*/*/pull/*
 // ==/UserScript==
 
 ;(function () {
@@ -29,7 +29,7 @@
         },
 
         getBranchName() {
-          return document.querySelector('.merge-pr-more-commits a').textContent
+          return document.querySelector('clipboard-copy[value]').value
         },
 
         insertButton(btn) {
@@ -61,7 +61,9 @@
     const branchName = rule.getBranchName(matches)
     const btn = document.createElement('a')
     btn.textContent = 'CircleCI Workflows'
-    btn.href = `https://circleci.com/gh/${userName}/workflows/${repoName}/tree/${branchName}`
+    btn.href = `https://app.circleci.com/pipelines/github/${userName}/${repoName}?branch=${encodeURIComponent(
+      branchName,
+    )}`
     btn.target = '_blank'
     btn.style.display = 'inline-block'
     btn.style.height = '20px'
