@@ -7,7 +7,7 @@
     "test": "lerna run build"
   },
   "devDependencies": {
-    "@babel/core": "7.15.0",
+    "@babel/core": "7.15.5",
     "@wemake-services/stylelint-config-scss": "0.5.0",
     "babel-eslint": "10.1.0",
     "dayjs": "1.10.6",
