@@ -6,4 +6,8 @@ esa の `プロフィール編集` → `Applications` で `Personal access token
 
 トークンはローカルにのみ保存されます。
 
+[インストール](https://github.com/matzkoh/userscripts/raw/master/packages/esa-on-google/dist/index.user.js)
+
+## スクリーンショット
+
 ![image](image.png)
