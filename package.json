@@ -22,7 +22,7 @@
     "prettier": "2.5.1",
     "prettier-plugin-packagejson": "2.2.15",
     "rimraf": "3.0.2",
-    "stylelint": "14.5.3",
+    "stylelint": "14.6.0",
     "stylelint-config-recess-order": "3.0.0"
   },
   "engines": {
