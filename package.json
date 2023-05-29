@@ -15,7 +15,7 @@
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "4.2.1",
     "fix-meta": "file:packages/fix-meta",
-    "glob": "8.0.3",
+    "glob": "8.1.0",
     "lerna": "5.5.4",
     "npm-run-all": "4.1.5",
     "parcel": "2.7.0",
