@@ -12,7 +12,7 @@
     "babel-eslint": "10.1.0",
     "dayjs": "1.11.7",
     "eslint": "8.41.0",
-    "eslint-config-prettier": "8.5.0",
+    "eslint-config-prettier": "8.8.0",
     "eslint-plugin-prettier": "4.2.1",
     "fix-meta": "file:packages/fix-meta",
     "glob": "10.2.6",
