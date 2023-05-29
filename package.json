@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.19.3",
-    "@wemake-services/stylelint-config-scss": "1.0.0",
+    "@wemake-services/stylelint-config-scss": "3.0.0",
     "babel-eslint": "10.1.0",
     "dayjs": "1.11.7",
     "eslint": "8.24.0",
