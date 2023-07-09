@@ -10,7 +10,7 @@
     "@babel/core": "7.22.8",
     "@wemake-services/stylelint-config-scss": "4.0.1",
     "@babel/eslint-parser": "7.22.7",
-    "dayjs": "1.11.7",
+    "dayjs": "1.11.9",
     "eslint": "8.44.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-prettier": "4.2.1",
