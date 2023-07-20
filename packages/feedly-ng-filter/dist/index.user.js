@@ -17,8 +17,6 @@
 // @grant          GM_log
 // ==/UserScript==
 
-require('fs')
-
 var $parcel$global =
   typeof globalThis !== 'undefined'
     ? globalThis
