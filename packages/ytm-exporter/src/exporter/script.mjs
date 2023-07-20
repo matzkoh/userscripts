@@ -1,5 +1,5 @@
-import { getPages, getTags, getScripts } from '../api'
-import { saveAsCsv } from '../csv'
+import { getPages, getTags, getScripts } from '../api.mjs'
+import { saveAsCsv } from '../csv.mjs'
 import { ProgressModal } from '../modal'
 import { waitAll, arrayToMapByItemId } from '../util'
 

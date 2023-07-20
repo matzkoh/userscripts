@@ -1,6 +1,6 @@
-import dayjs from '../dayjs'
-import { getPages } from '../api'
-import { saveAsCsv } from '../csv'
+import dayjs from '../dayjs.mjs'
+import { getPages } from '../api.mjs'
+import { saveAsCsv } from '../csv.mjs'
 import { ProgressModal } from '../modal'
 import { convertPatterns, waitAll } from '../util'
 

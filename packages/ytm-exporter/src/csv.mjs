@@ -1,4 +1,4 @@
-import dayjs from './dayjs'
+import dayjs from './dayjs.mjs'
 
 export function saveAsCsv(rows, name) {
   const blob = createExcelCsvBlob(rows)

@@ -2,15 +2,22 @@
   "name": "fix-meta",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "build": ":",
+    "lint": "eslint . --ext js,cjs,mjs --ignore-path ../../.eslintignore"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/matzkoh/userscripts.git"
   },
   "license": "MIT",
   "files": [
-    "index.js"
+    "index.mjs"
   ],
+  "dependencies": {
+    "glob": "10.3.3"
+  },
   "bin": {
-    "fix-meta": "index.js"
+    "fix-meta": "index.mjs"
   }
 }

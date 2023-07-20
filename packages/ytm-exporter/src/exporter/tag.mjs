@@ -1,6 +1,6 @@
-import dayjs from '../dayjs'
-import { getTagAttributes, getTagPageAssignments } from '../api'
-import { saveAsCsv } from '../csv'
+import dayjs from '../dayjs.mjs'
+import { getTagAttributes, getTagPageAssignments } from '../api.mjs'
+import { saveAsCsv } from '../csv.mjs'
 import { AlertModal, ProgressModal } from '../modal'
 import { convertPatterns, unique, waitAll } from '../util'
 

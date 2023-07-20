@@ -7,9 +7,12 @@ module.exports = {
     greasemonkey: true,
     commonjs: true,
   },
-  parser: 'babel-eslint',
   parserOptions: {
-    ecmaVersion: 2018,
+    sourceType: 'module',
+    ecmaVersion: 'latest',
+    ecmaFeatures: {
+      globalReturn: true,
+    },
   },
   globals: {
     GM_unregisterMenuCommand: false,

@@ -3,28 +3,27 @@
   "private": true,
   "scripts": {
     "all": "lerna run",
-    "install": "lerna bootstrap",
     "test": "lerna run build"
   },
   "devDependencies": {
-    "@babel/core": "7.22.8",
+    "@babel/core": "7.22.9",
+    "@babel/eslint-parser": "7.22.9",
     "@wemake-services/stylelint-config-scss": "4.0.1",
-    "@babel/eslint-parser": "7.22.7",
-    "dayjs": "1.11.9",
-    "eslint": "8.44.0",
+    "eslint": "8.45.0",
     "eslint-config-prettier": "8.8.0",
-    "eslint-plugin-prettier": "4.2.1",
-    "fix-meta": "file:packages/fix-meta",
-    "glob": "10.3.3",
-    "lerna": "7.1.1",
+    "eslint-plugin-prettier": "5.0.0",
+    "lerna": "7.1.4",
     "npm-run-all": "4.1.5",
     "parcel": "2.9.3",
     "prettier": "3.0.0",
-    "prettier-plugin-packagejson": "2.4.4",
+    "prettier-plugin-packagejson": "2.4.5",
     "rimraf": "5.0.1",
-    "stylelint": "15.10.1",
-    "stylelint-config-recess-order": "4.2.0"
+    "stylelint": "15.10.2",
+    "stylelint-config-recess-order": "4.3.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
     "node": ">= 14",
     "npm": "9"

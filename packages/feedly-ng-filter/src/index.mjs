@@ -17,7 +17,7 @@
 // @grant          GM_log
 // ==/UserScript==
 
-const fs = require('fs')
+import fs from 'fs'
 
 const notificationDefaults = {
   title: 'Feedly NG Filter',

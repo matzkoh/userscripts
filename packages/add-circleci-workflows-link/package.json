@@ -2,20 +2,28 @@
   "name": "add-circleci-workflows-link",
   "private": true,
   "license": "MIT",
-  "main": "dist/index.user.js",
+  "browser": "dist/index.user.js",
+  "source": "src/index.mjs",
   "scripts": {
     "prebuild": "run-s lint clean",
-    "build": "parcel build src/index.js -o index.user.js --no-autoinstall --no-minify --no-content-hash --no-source-maps --experimental-scope-hoisting",
+    "build": "parcel build",
     "postbuild": "fix-meta \"dist/**/*.user.js\" && prettier --write \"dist/**/*.user.js\"",
     "clean": "rimraf dist",
-    "lint": "eslint . --ignore-path ../../.eslintignore",
+    "lint": "eslint . --ext js,cjs,mjs --ignore-path ../../.eslintignore",
     "watch": "parcel watch src/index.js -o index.user.js"
   },
   "devDependencies": {
-    "@babel/core": "7.22.8"
+    "@babel/core": "7.22.9",
+    "fix-meta": "file:../fix-meta"
   },
   "engines": {
     "node": ">= 10",
     "npm": ">= 6.4"
+  },
+  "targets": {
+    "browser": {
+      "optimize": false,
+      "sourceMap": false
+    }
   }
 }

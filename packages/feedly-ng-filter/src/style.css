@@ -29,10 +29,10 @@
   padding: 4px;
   font: inherit;
   border: 1px solid #999;
-}
 
-.fngf-panel input[type='text']:focus {
-  box-shadow: 0 0 0 1px #999 inset;
+  &:focus {
+    box-shadow: 0 0 0 1px #999 inset;
+  }
 }
 
 .fngf-panel-terms {
@@ -71,8 +71,8 @@
 
 .fngf-panel-buttons {
   justify-content: space-between;
-}
 
-.fngf-panel-buttons > .fngf-btn-group:not(:first-child) {
-  margin-left: 10px;
+  > .fngf-btn-group:not(:first-child) {
+    margin-left: 10px;
+  }
 }

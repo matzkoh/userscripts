@@ -1,6 +1,6 @@
-import dayjs from '../dayjs'
-import { getDataList, getDataInputs } from '../api'
-import { saveAsCsv } from '../csv'
+import dayjs from '../dayjs.mjs'
+import { getDataList, getDataInputs } from '../api.mjs'
+import { saveAsCsv } from '../csv.mjs'
 import { ProgressModal } from '../modal'
 
 const columns = [
