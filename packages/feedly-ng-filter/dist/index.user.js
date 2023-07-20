@@ -890,7 +890,7 @@ parcelRequire.register('cG8Vr', function (module, exports) {
     }
     function onReadyStateChange1() {
       if (this.readyState < 4 || this.status !== 200) return
-      if (!/^(?:https?:)?\/\/(?:cloud\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) return
+      if (!/^(?:https?:)?\/\/(?:(?:api|cloud)\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) return
       const pongEventType1 = 'streamcontentloaded_callback' + uniqueId1++
       const data1 = JSON.stringify({
         type: pongEventType1,

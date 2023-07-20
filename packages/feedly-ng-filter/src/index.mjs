@@ -1162,7 +1162,7 @@ evalInContent(() => {
       return
     }
 
-    if (!/^(?:https?:)?\/\/(?:cloud\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) {
+    if (!/^(?:https?:)?\/\/(?:(?:api|cloud)\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) {
       return
     }
 
