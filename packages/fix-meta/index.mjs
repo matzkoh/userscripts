@@ -16,9 +16,10 @@ async function main(args) {
     files.map(async file => {
       const body = await readFile(file, 'utf-8')
       const [pre, meta, post] = body.split(metaReg, 3)
+      const code = (pre + post).replace('require("fs")', '')
 
       if (meta) {
-        await writeFile(file, meta + '\n\n' + pre + post)
+        await writeFile(file, meta + '\n\n' + code)
         console.log(`meta comment fixed: ${path.basename(file)}`)
       }
     }),
