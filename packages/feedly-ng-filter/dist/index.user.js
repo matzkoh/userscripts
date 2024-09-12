@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Feedly NG Filter
 // @namespace      https://github.com/matzkoh
-// @version        1.0.0
+// @version        1.1.0
 // @description    ルールにマッチするアイテムを既読にして取り除きます。ルールは正規表現で記述でき、複数のルールをツリー状に組み合わせることができます。
 // @author         matzkoh
 // @include        https://feedly.com/*
@@ -871,47 +871,38 @@ parcelRequire.register('cG8Vr', function (module, exports) {
     },
   })
   evalInContent(() => {
-    const XHR1 = XMLHttpRequest
     let uniqueId1 = 0
-    window.XMLHttpRequest = function XMLHttpRequest1() {
-      const req1 = new XHR1()
-      req1.open = open1
-      req1.setRequestHeader = setRequestHeader1
-      req1.addEventListener('readystatechange', onReadyStateChange1, false)
-      return req1
-    }
-    function open1(method1, url1, ...args1) {
-      this.__url__ = url1
-      return XHR1.prototype.open.call(this, method1, url1, ...args1)
-    }
-    function setRequestHeader1(header1, value1) {
-      if (header1 === 'Authorization') this.__auth__ = value1
-      return XHR1.prototype.setRequestHeader.call(this, header1, value1)
-    }
-    function onReadyStateChange1() {
-      if (this.readyState < 4 || this.status !== 200) return
-      if (!/^(?:https?:)?\/\/(?:(?:api|cloud)\.)?feedly\.com\/v3\/streams\/contents\b/.test(this.__url__)) return
-      const pongEventType1 = 'streamcontentloaded_callback' + uniqueId1++
-      const data1 = JSON.stringify({
-        type: pongEventType1,
-        auth: this.__auth__,
-        text: this.responseText,
-      })
-      const event1 = new MessageEvent('streamcontentloaded', {
-        bubbles: true,
-        cancelable: false,
-        data: data1,
-        origin: location.href,
-        source: null,
-      })
-      const onPong1 = ({ data: data1 }) =>
-        Object.defineProperty(this, 'responseText', {
-          configurable: true,
-          value: data1,
+    const _fetch1 = window.fetch
+    window.fetch = async function fetch1(url1, init1) {
+      const res1 = await _fetch1.call(this, url1, init1)
+      if (!/^(?:https?:)?\/\/(?:(?:api|cloud)\.)?feedly\.com\/v3\/streams\/contents\b/.test(url1)) return res1
+      const auth1 = init1.headers.Authorization
+      const _text1 = res1.text
+      res1.text = async function text1() {
+        const text1 = await _text1.call(this)
+        const pongEventType1 = 'streamcontentloaded_callback' + uniqueId1++
+        const data1 = JSON.stringify({
+          type: pongEventType1,
+          auth: auth1,
+          text: text1,
         })
-      document.addEventListener(pongEventType1, onPong1, false)
-      document.dispatchEvent(event1)
-      document.removeEventListener(pongEventType1, onPong1, false)
+        const event1 = new MessageEvent('streamcontentloaded', {
+          bubbles: true,
+          cancelable: false,
+          data: data1,
+          origin: location.href,
+          source: null,
+        })
+        let result1
+        const onPong1 = ({ data: data1 }) => {
+          result1 = data1
+        }
+        document.addEventListener(pongEventType1, onPong1, false)
+        document.dispatchEvent(event1)
+        document.removeEventListener(pongEventType1, onPong1, false)
+        return result1 ?? text1
+      }
+      return res1
     }
   })
   const clipboard = new DataTransfer()
